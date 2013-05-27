@@ -12,7 +12,18 @@ var serverTab = document.getElementById('server-tab');
 var FIRCEventListener = function (type, data) {
     switch (type) {
     case 'debug':
-        //console.log(data);
+        if (data.substr(0, 8) == 'RECV : :') {
+            var splittedData = data.substr(8).split(' ');
+            var first = splittedData.shift();
+            var second = splittedData.shift();
+            var third = splittedData.shift();
+            var fourth = splittedData.join(' ').substr(1);
+            if (second == 'NOTICE' && third != 'Auth') {
+                console.log('notice');
+                console.log('from: ' + first.split('!')[0]);
+                console.log('message: ' + fourth);
+            }
+        }
         break;
     case 'onReady':
         console.log('ready');
