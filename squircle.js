@@ -41,7 +41,7 @@ var FIRCEventListener = function (type, data) {
         console.log('channel: ' + data);
         break;
     case 'onTopic':
-        console.log('topic change');
+        console.log('topic');
         console.log('channel: ' + data[0]);
         console.log('topic: ' + data[1]);
         break;
