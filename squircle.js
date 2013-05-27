@@ -7,6 +7,8 @@ var channel = '#studio321';
 var password = '';
 var security = '843';
 
+var serverTab = document.getElementById('server-tab');
+
 var FIRCEventListener = function (type, data) {
     switch (type) {
     case 'debug':
@@ -157,6 +159,7 @@ var FIRCEventListener = function (type, data) {
     case 'onServerMessage':
         console.log('server message');
         console.log('message: ' + data);
+        serverTab.appendChild(createChatElement('', data));
         break;
     }
     console.log('');
@@ -194,4 +197,26 @@ function requestChannelList() {
 
 function requestChannelMode(channel) {
     firc.getChannelMode(channel);
+}
+
+function createChatElement(nickname, message) {
+    var profileElement = createProfileElement(nickname);
+    profileElement.className = 'chat-profile-img';
+    var messageElement = document.createElement('span');
+    messageElement.textContent = message;
+    var chatElement = document.createElement('div');
+    chatElement.className = 'chat';
+    chatElement.appendChild(profileElement);
+    chatElement.appendChild(messageElement);
+    return chatElement;
+}
+
+function createProfileElement(nickname) {
+    var imageElement = new Image();
+    imageElement.src = './img/ozinger.png';
+    imageElement.style.borderRadius = 'inherit';
+    var profileElement = document.createElement('object');
+    profileElement.data = './img/profile/' + nickname + '.png';
+    profileElement.appendChild(imageElement);
+    return profileElement;
 }
