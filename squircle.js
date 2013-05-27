@@ -1,5 +1,4 @@
 var firc = document.getElementById('firc');
-//var md5 = function (string) {}
 var server = 'webirc.ozinger.org';
 var port = '8080';
 var encode = 'UTF-8';
@@ -195,8 +194,4 @@ function requestChannelList() {
 
 function requestChannelMode(channel) {
     firc.getChannelMode(channel);
-}
-
-function profileImageSrc(email, size) {
-    return 'http://www.gravatar.com/avatar/' + md5(email) + '?s=' + size;
 }
