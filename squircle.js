@@ -89,6 +89,9 @@ var FIRCEventListener = function (type, data) {
         console.log('channel change');
         console.log('channel: ' + data[0]);
         console.log('mode: ' + data[1]);
+        if (data[1].charAt(1) == 'h') {
+            requestUserList(data[0]); //Deal with firc bug
+        }
         console.log('nickname: ' + data[2]);
         break;
     case 'onBanList':
@@ -105,6 +108,26 @@ var FIRCEventListener = function (type, data) {
         console.log('user list');
         console.log('channel: ' + data[0]);
         console.log('users: ' + data[1]);
+        for (var i = 0; i < data[1].length; ++i) {
+            var user = data[1][i];
+            switch (user.charAt(0)) {
+            case '~':
+                console.log('owner: ' + user.substr(1));
+                break;
+            case '@':
+                console.log('operator: ' + user.substr(1));
+                break;
+            case '%':
+                console.log('half operator: ' + user.substr(1));
+                break;
+            case '+':
+                console.log('voice user: ' + user.substr(1));
+                break;
+            default:
+                console.log('user: ' + user);
+                break;
+            }
+        }
         break;
     case 'onUserJoin':
         console.log('user join');
@@ -119,7 +142,18 @@ var FIRCEventListener = function (type, data) {
     case 'onUserMode':
         console.log('user mode');
         console.log('channel: ' + data[0]);
-        console.log('mode: ' + data[1]);
+        console.log('raw mode: ' + data[1]);
+        switch (data[1].charAt(1)) {
+        case 'q':
+            console.log('mode: ' + 'Owner');
+            break;
+        case 'o':
+            console.log('mode: ' + 'Operator');
+            break;
+        case 'v':
+            console.log('mode: ' + 'Voice');
+            break;
+        }
         console.log('nickname: ' + data[2]);
         console.log('from: ' + data[3]);
         break;
@@ -201,6 +235,10 @@ function partChannel(channel, message) {
 
 function quitIrc(message) {
     sendIrcCommand('QUIT :' + message);
+}
+
+function requestUserList(channel) {
+    sendIrcCommand('NAMES ' + channel);
 }
 
 function requestChannelList() {
