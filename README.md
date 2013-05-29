@@ -1,7 +1,11 @@
+[Ozinger Server]: http://ozinger.org/
+[FIRC]: http://firc.kr/
+
 Squircle
 ========
 
-Squircle(Squid IRC Client)은 FIRC와 오징어서버에 기반한 웹 irc 클라이언트입니다.
+Squircle(Squid IRC Client)은 [FIRC][FIRC]와 [오징어서버][Ozinger Server]에
+기반한 웹 irc 클라이언트입니다.
 
 
 목표
