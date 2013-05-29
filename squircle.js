@@ -2,7 +2,7 @@ var firc = document.getElementById('firc');
 var server = 'webirc.ozinger.org';
 var port = '8080';
 var encode = 'UTF-8';
-var nickname = 'squidward' + parseInt(Math.random() * 10000);
+var nickname = defaultNickname();
 var channel = '#studio321';
 var password = '';
 var security = '843';
@@ -41,7 +41,7 @@ var FIRCEventListener = function (type, data) {
         console.log('error code: ' + data[0]);
         if (data[0] == 106) { //nickname
             console.log('change nickname and reconnect');
-            nickname = 'squidward' + parseInt(Math.random() * 10000);
+            nickname = defaultNickname();
             firc.setInfo(server, port, encode, nickname,
                          channel, password, security);
             firc.connect();
@@ -247,6 +247,10 @@ function requestChannelList() {
 
 function requestChannelMode(channel) {
     firc.getChannelMode(channel);
+}
+
+function defaultNickname() {
+    return 'squidward' + parseInt(Math.random() * 10000);
 }
 
 function createChatElement(nickname, message) {
