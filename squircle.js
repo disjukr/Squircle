@@ -253,24 +253,63 @@ function defaultNickname() {
     return 'squidward' + parseInt(Math.random() * 10000);
 }
 
-function createChatElement(nickname, message) {
-    var profileElement = createProfileElement(nickname);
-    profileElement.className = 'chat-profile-img';
-    var messageElement = document.createElement('span');
+function formatTime(time) {
+    time = time || new Date();
+    function zeroPatch(decimal) {
+        return (decimal < 10)? '0' + decimal : decimal;
+    }
+    var hours = zeroPatch(time.getHours());
+    var minutes = zeroPatch(time.getMinutes());
+    var seconds = zeroPatch(time.getSeconds());
+    return hours + ':' + minutes + ':' + seconds;
+}
+
+function createChatElement(nickname, message, time) {
+    var profileImageElement = createProfileElement(nickname);
+    profileImageElement.className = 'chat-profile-img';
+
+    var nicknameElement = document.createElement('div');
+    nicknameElement.className = 'chat-profile-nickname';
+    nicknameElement.textContent = nickname == ''? '*' : nickname;
+
+    time = time || new Date();
+    var timeElement = document.createElement('time');
+    timeElement.className = 'chat-profile-time';
+    timeElement.dateTime = time;
+    timeElement.textContent = formatTime(time);
+
+    var messageElement = document.createElement('div');
+    messageElement.className = 'chat-message';
     messageElement.textContent = message;
+
+    var profileElement = document.createElement('div');
+    profileElement.className = 'chat-profile';
+    profileElement.appendChild(profileImageElement);
+    profileElement.appendChild(nicknameElement);
+    profileElement.appendChild(timeElement);
+
     var chatElement = document.createElement('div');
     chatElement.className = 'chat';
     chatElement.appendChild(profileElement);
     chatElement.appendChild(messageElement);
-    return chatElement;
+
+    var wrapElement = document.createElement('div');
+    wrapElement.appendChild(chatElement);
+    wrapElement.style.clear = 'both';
+
+    return wrapElement;
 }
 
 function createProfileElement(nickname) {
     var imageElement = new Image();
     imageElement.src = './img/ozinger.png';
+    imageElement.style.width = 'inherit';
+    imageElement.style.height = 'inherit';
     imageElement.style.borderRadius = 'inherit';
+
     var profileElement = document.createElement('object');
     profileElement.data = './img/profile/' + nickname + '.png';
     profileElement.appendChild(imageElement);
+
     return profileElement;
 }

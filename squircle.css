@@ -20,9 +20,31 @@
   display: block;
 }
 
+.chat-profile {
+  float: left;
+}
+
 .chat-profile-img {
   display: inline-block;
-  width: 50px;
-  height: 50px;
-  border-radius: 15px;
+  width: 80px;
+  height: 80px;
+  border-radius: 20px;
+}
+
+.chat-profile-nickname {
+  text-align: center;
+  border-radius: 10px;
+  background-color: #abc;
+}
+
+.chat-profile-time {
+  display: block;
+  text-align: center;
+  border-radius: 10px;
+  background-color: #abc;
+}
+
+.chat-message {
+  border-radius: 10px;
+  background-color: #abc;
 }
