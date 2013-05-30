@@ -47,14 +47,19 @@
   background-color: #abc;
 }
 
-.chat-profile-time {
-  display: block;
-  text-align: center;
-  border-radius: 10px;
-  background-color: #abc;
+.chat-message {
+  display: inline;
 }
 
-.chat-message {
+.chat-message-time {
+  display: inline;
+  margin-left: 10px;
+  text-align: center;
+  border-radius: 10px;
+  background-color: #def;
+}
+
+.chat-message-box {
   float: left;
   width: 530px;
   padding: 5px;

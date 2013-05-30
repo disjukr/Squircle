@@ -303,26 +303,30 @@ function createChatElement(nickname, message, time) {
     nicknameElement.className = 'chat-profile-nickname';
     nicknameElement.textContent = nickname == ''? '*' : nickname;
 
+    var messageElement = document.createElement('p');
+    messageElement.textContent = message;
+    messageElement.className = 'chat-message';
+
     time = time || new Date();
     var timeElement = document.createElement('time');
-    timeElement.className = 'chat-profile-time';
+    timeElement.className = 'chat-message-time';
     timeElement.dateTime = time;
     timeElement.textContent = formatTime(time);
 
-    var messageElement = document.createElement('div');
-    messageElement.className = 'chat-message';
-    messageElement.textContent = message;
+    var messageBoxElement = document.createElement('div');
+    messageBoxElement.className = 'chat-message-box';
+    messageBoxElement.appendChild(messageElement);
+    messageBoxElement.appendChild(timeElement);
 
     var profileElement = document.createElement('div');
     profileElement.className = 'chat-profile';
     profileElement.appendChild(profileImageElement);
     profileElement.appendChild(nicknameElement);
-    profileElement.appendChild(timeElement);
 
     var chatElement = document.createElement('div');
     chatElement.className = 'chat';
     chatElement.appendChild(profileElement);
-    chatElement.appendChild(messageElement);
+    chatElement.appendChild(messageBoxElement);
 
     var wrapElement = document.createElement('div');
     wrapElement.appendChild(chatElement);
