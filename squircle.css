@@ -20,6 +20,7 @@
 }
 
 .off {
+  display: none;
   visibility: hidden;
 }
 
@@ -52,6 +53,9 @@
 }
 
 .chat-message {
+  float: left;
+  width: 550px;
+  padding: 5px;
   border-radius: 10px;
   background-color: #abc;
 }
