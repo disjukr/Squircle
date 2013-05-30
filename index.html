@@ -10,7 +10,12 @@
       <param name="allowScriptAccess" value="always"/>
       <embed src="./firc2.swf" allowScriptAccess="always"/>
     </object>
-    <div class="tab tab-on" id="server-tab"></div>
+    <div class="tab-buttons" id="tab-buttons">
+      <button onclick="activeChannel('server')">server</button>
+    </div>
+    <div id="tabs">
+      <div class="tab on" id="server-tab"></div>
+    </div>
     <script src="./squircle.js"></script>
   </body>
 </html>

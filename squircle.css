@@ -2,17 +2,24 @@
   visibility: hidden;
 }
 
-.tab {
+.tab-buttons {
   position: absolute;
   top: 0;
   left: 0;
+  height: 30px;
 }
 
-.tab-on {
+.tab {
+  position: absolute;
+  top: 30px;
+  left: 0;
+}
+
+.on {
   visibility: visible;
 }
 
-.tab-off {
+.off {
   visibility: hidden;
 }
 

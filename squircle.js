@@ -3,11 +3,15 @@ var server = 'webirc.ozinger.org';
 var port = '8080';
 var encode = 'UTF-8';
 var nickname = defaultNickname();
-var channel = '#studio321';
+var channel = '#abcdef';
 var password = '';
 var security = '843';
 
-var serverTab = document.getElementById('server-tab');
+var currentChannel = 'server';
+var tabsElement = document.getElementById('tabs');
+var serverTabElement = document.getElementById('server-tab');
+var tabButtonsElement = document.getElementById('tab-buttons');
+var tabElements = {server: serverTabElement};
 
 var FIRCEventListener = function (type, data) {
     switch (type) {
@@ -50,6 +54,10 @@ var FIRCEventListener = function (type, data) {
     case 'onJoin':
         console.log('join');
         console.log('channel: ' + data);
+        tabElements[data] = createTabElement();
+        tabsElement.appendChild(tabElements[data]);
+        tabButtonsElement.appendChild(createTabButtonElement(channel));
+        activeChannel(data);
         break;
     case 'onTopic':
         console.log('topic');
@@ -190,6 +198,9 @@ var FIRCEventListener = function (type, data) {
         console.log('channel: ' + data[0]);
         console.log('nickname: ' + data[1]);
         console.log('message: ' + data[2]);
+        tabElements[data[0]].appendChild(
+            createChatElement(data[1], data[2])
+        );
         break;
     case 'onMyMessage':
         console.log('my message');
@@ -205,7 +216,7 @@ var FIRCEventListener = function (type, data) {
     case 'onServerMessage':
         console.log('server message');
         console.log('message: ' + data);
-        serverTab.appendChild(createChatElement('', data));
+        serverTabElement.appendChild(createChatElement('', data));
         break;
     }
     console.log('');
@@ -262,6 +273,26 @@ function formatTime(time) {
     var minutes = zeroPatch(time.getMinutes());
     var seconds = zeroPatch(time.getSeconds());
     return hours + ':' + minutes + ':' + seconds;
+}
+
+function activeChannel(channel) {
+    tabElements[currentChannel].className = 'tab off';
+    tabElements[channel].className = 'tab on';
+    currentChannel = channel;
+}
+
+function createTabButtonElement(channel) {
+    var tabButtonElement = document.createElement('button');
+    tabButtonElement.textContent = channel;
+    tabButtonElement.onclick = function () {
+        activeChannel(channel);
+    };
+    return tabButtonElement;
+}
+
+function createTabElement() {
+    var tabElement = document.createElement('div');
+    return tabElement;
 }
 
 function createChatElement(nickname, message, time) {
