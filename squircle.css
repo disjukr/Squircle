@@ -34,6 +34,7 @@
 
 .chat-profile-img {
   display: inline-block;
+  margin: 10px;
   width: 80px;
   height: 80px;
   border-radius: 20px;
@@ -41,6 +42,7 @@
 
 .chat-profile-nickname {
   text-align: center;
+  margin-bottom: 5px;
   border-radius: 10px;
   background-color: #abc;
 }
@@ -54,8 +56,10 @@
 
 .chat-message {
   float: left;
-  width: 550px;
+  width: 530px;
   padding: 5px;
+  margin-left: 10px;
+  margin-top: 35px;
   border-radius: 10px;
   background-color: #abc;
 }
