@@ -343,10 +343,10 @@ function createChatElement(nickname, message, time) {
     timeElement.dateTime = time;
     timeElement.textContent = formatTime(time);
 
-    var messageBoxElement = document.createElement('div');
-    messageBoxElement.className = 'chat-box';
-    messageBoxElement.appendChild(messageElement);
-    messageBoxElement.appendChild(timeElement);
+    var boxElement = document.createElement('div');
+    boxElement.className = 'chat-box';
+    boxElement.appendChild(messageElement);
+    boxElement.appendChild(timeElement);
 
     var profileElement = document.createElement('div');
     profileElement.className = 'chat-profile';
@@ -356,7 +356,7 @@ function createChatElement(nickname, message, time) {
     var chatElement = document.createElement('div');
     chatElement.className = 'chat';
     chatElement.appendChild(profileElement);
-    chatElement.appendChild(messageBoxElement);
+    chatElement.appendChild(boxElement);
 
     var wrapElement = document.createElement('div');
     wrapElement.appendChild(chatElement);
