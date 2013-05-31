@@ -42,8 +42,6 @@ var FIRCEventListener = function (type, data) {
     case 'onConnect':
         console.log('connect');
         break;
-    case 'onDisconnect':
-        console.log('disconnect');
     case 'onError':
         console.log('error');
         console.log('error code: ' + data[0]);
@@ -60,7 +58,7 @@ var FIRCEventListener = function (type, data) {
         console.log('channel: ' + data);
         tabElements[data] = createTabElement();
         tabsElement.appendChild(tabElements[data]);
-        tabButtonsElement.appendChild(createTabButtonElement(channel));
+        tabButtonsElement.appendChild(createTabButtonElement(data));
         activeChannel(data);
         tabElements[data].appendChild(
             createNoticeElement(nickname + ' has joined')
@@ -148,6 +146,9 @@ var FIRCEventListener = function (type, data) {
         console.log('user join');
         console.log('channel: ' + data[0]);
         console.log('nickname: ' + data[1]);
+        tabElements[data[0]].appendChild(
+            createNoticeElement(data[1] + ' has joined')
+        );
         break;
     case 'onUserNick':
         console.log('user nickname');
@@ -177,11 +178,17 @@ var FIRCEventListener = function (type, data) {
         console.log('channel: ' + data[0]);
         console.log('nickname: ' + data[1]);
         console.log('message: ' + data[2]);
+        tabElements[data[0]].appendChild(
+            createNoticeElement(data[1] + ' has quit: ' + data[2])
+        );
         break;
     case 'onUserQuit':
         console.log('user quit');
         console.log('nickname: ' + data[0]);
         console.log('message: ' + data[1]);
+        tabElements[data[0]].appendChild(
+            createNoticeElement(data[1] + ' has quit: ' + data[2])
+        );
         break;
     case 'onKick':
         console.log('user kick');
@@ -190,6 +197,16 @@ var FIRCEventListener = function (type, data) {
         console.log('from: ' + data[2]);
         console.log('message: ' + data[3]);
         console.log('is me: ' + data[4]);
+        if (data[4]) {
+            tabElements[data[0]].appendChild(
+                createNoticeElement('You have been kicked by' +
+                    data[2] + ' because ' + data[3]));
+        }
+        else {
+            tabElements[data[0]].appendChild(
+                createNoticeElement(data[1] + ' have been kicked by' +
+                    data[2] + ' because ' + data[3]));
+        }
         break;
     case 'onWhoIs':
         console.log('whois');
@@ -292,8 +309,8 @@ function createTabButtonElement(channel) {
     var tabButtonElement = document.createElement('button');
     tabButtonElement.textContent = channel;
     tabButtonElement.onclick = function () {
-        activeChannel(channel);
-    };
+        activeChannel(this);
+    }.bind(channel);
     return tabButtonElement;
 }
 
