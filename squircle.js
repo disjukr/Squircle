@@ -23,9 +23,13 @@ var FIRCEventListener = function (type, data) {
             var third = splittedData.shift();
             var fourth = splittedData.join(' ').substr(1);
             if (second == 'NOTICE' && third != 'Auth') {
+                var from = first.split('!')[0];
                 console.log('notice');
-                console.log('from: ' + first.split('!')[0]);
+                console.log('from: ' + from);
                 console.log('message: ' + fourth);
+                tabElements[currentChannel].appendChild(
+                    createNoticeElement(from + ': ' + fourth)
+                );
             }
         }
         break;
@@ -58,6 +62,9 @@ var FIRCEventListener = function (type, data) {
         tabsElement.appendChild(tabElements[data]);
         tabButtonsElement.appendChild(createTabButtonElement(channel));
         activeChannel(data);
+        tabElements[data].appendChild(
+            createNoticeElement(nickname + ' has joined')
+        );
         break;
     case 'onTopic':
         console.log('topic');
@@ -295,6 +302,29 @@ function createTabElement() {
     return tabElement;
 }
 
+function createNoticeElement(message, time) {
+    var messageElement = document.createElement('p');
+    messageElement.textContent = message;
+    messageElement.className = 'notice-message';
+
+    time = time || new Date();
+    var timeElement = document.createElement('time');
+    timeElement.className = 'notice-time';
+    timeElement.dateTime = time;
+    timeElement.textContent = formatTime(time);
+
+    var noticeElement = document.createElement('div');
+    noticeElement.className = 'notice';
+    noticeElement.appendChild(messageElement);
+    noticeElement.appendChild(timeElement);
+
+    var wrapElement = document.createElement('div');
+    wrapElement.appendChild(noticeElement);
+    wrapElement.style.clear = 'both';
+
+    return wrapElement;
+}
+
 function createChatElement(nickname, message, time) {
     var profileImageElement = createProfileElement(nickname);
     profileImageElement.className = 'chat-profile-img';
@@ -309,12 +339,12 @@ function createChatElement(nickname, message, time) {
 
     time = time || new Date();
     var timeElement = document.createElement('time');
-    timeElement.className = 'chat-message-time';
+    timeElement.className = 'chat-time';
     timeElement.dateTime = time;
     timeElement.textContent = formatTime(time);
 
     var messageBoxElement = document.createElement('div');
-    messageBoxElement.className = 'chat-message-box';
+    messageBoxElement.className = 'chat-box';
     messageBoxElement.appendChild(messageElement);
     messageBoxElement.appendChild(timeElement);
 

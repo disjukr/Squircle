@@ -13,6 +13,9 @@
   position: absolute;
   top: 30px;
   left: 0;
+  overflow-y: scroll;
+  width: 640;
+  height: 100%;
 }
 
 .on {
@@ -22,6 +25,27 @@
 .off {
   display: none;
   visibility: hidden;
+}
+
+.notice {
+  display: block;
+  margin: 50px 100px 50px 100px;
+  padding: 5px;
+  width: 430px;
+  border-radius: 10px;
+  background-color: #abc;
+}
+
+.notice-message {
+  display: inline;
+}
+
+.notice-time {
+  display: inline;
+  margin-left: 10px;
+  text-align: center;
+  border-radius: 10px;
+  background-color: #def;
 }
 
 .chat {
@@ -51,7 +75,7 @@
   display: inline;
 }
 
-.chat-message-time {
+.chat-time {
   display: inline;
   margin-left: 10px;
   text-align: center;
@@ -59,7 +83,7 @@
   background-color: #def;
 }
 
-.chat-message-box {
+.chat-box {
   float: left;
   width: 530px;
   padding: 5px;
