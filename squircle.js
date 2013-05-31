@@ -7,11 +7,11 @@ var channel = '#abcdef';
 var password = '';
 var security = '843';
 
-var currentChannel = 'server';
+var currentChannel = '#';
 var tabsElement = document.getElementById('tabs');
 var serverTabElement = document.getElementById('server-tab');
 var tabButtonsElement = document.getElementById('tab-buttons');
-var tabElements = {server: serverTabElement};
+var tabElements = {'#': serverTabElement};
 
 var FIRCEventListener = function (type, data) {
     switch (type) {
@@ -326,11 +326,11 @@ function createNoticeElement(message, time) {
 }
 
 function createChatElement(nickname, message, time) {
-    var profileImageElement = createProfileElement(nickname);
-    profileImageElement.className = 'chat-profile-img';
+    var profileElement = createProfileElement(nickname);
+    profileElement.className = 'chat-img';
 
     var nicknameElement = document.createElement('div');
-    nicknameElement.className = 'chat-profile-nickname';
+    nicknameElement.className = 'chat-nickname';
     nicknameElement.textContent = nickname == ''? '*' : nickname;
 
     var messageElement = document.createElement('p');
@@ -348,18 +348,14 @@ function createChatElement(nickname, message, time) {
     boxElement.appendChild(messageElement);
     boxElement.appendChild(timeElement);
 
-    var profileElement = document.createElement('div');
-    profileElement.className = 'chat-profile';
-    profileElement.appendChild(profileImageElement);
-    profileElement.appendChild(nicknameElement);
-
     var chatElement = document.createElement('div');
     chatElement.className = 'chat';
     chatElement.appendChild(profileElement);
-    chatElement.appendChild(boxElement);
+    chatElement.appendChild(nicknameElement);
 
     var wrapElement = document.createElement('div');
     wrapElement.appendChild(chatElement);
+    wrapElement.appendChild(boxElement);
     wrapElement.style.clear = 'both';
 
     return wrapElement;
@@ -368,6 +364,7 @@ function createChatElement(nickname, message, time) {
 function createProfileElement(nickname) {
     var imageElement = new Image();
     imageElement.src = './img/ozinger.png';
+    imageElement.style.margin = '0';
     imageElement.style.width = 'inherit';
     imageElement.style.height = 'inherit';
     imageElement.style.borderRadius = 'inherit';

@@ -16,6 +16,7 @@
   overflow-y: scroll;
   width: 640;
   height: 100%;
+  background-color: #333;
 }
 
 .on {
@@ -29,80 +30,98 @@
 
 .notice {
   display: block;
-  margin: 50px 100px 50px 100px;
+  text-align: center;
+  margin: 15px 125px 10px 125px;
   padding: 5px;
-  width: 430px;
+  width: 380px;
   border-radius: 10px;
-  background-color: #abc;
+  background-color: #ddd;
 }
 
 .notice-message {
   display: inline;
+  font-size: 15px;
+  font-weight: bold;
 }
 
 .notice-time {
   display: inline;
   margin-left: 10px;
+  padding-left: 10px;
+  padding-right: 10px;
   text-align: center;
+  font-size: 11px;
+  color: #fff;
   border-radius: 10px;
-  background-color: #def;
+  background-color: #999;
 }
 
 .chat {
   display: block;
 }
 
-.chat-profile {
+.chat-nickname {
+  text-align: center;
+  display: block;
   float: left;
+  margin: 10px;
+  padding: 0 5px 0 5px;
+  min-width: 70px;
+  font-size: 11px;
+  border-radius: 5px;
+  background-color: #eee;
 }
 
-.chat-profile-img {
-  display: inline-block;
-  margin: 10px;
+.chat-img {
+  display: block;
+  clear: left;
+  float: left;
+  margin: 15px 0 10px 10px;
   width: 80px;
   height: 80px;
   border-radius: 20px;
 }
 
-.chat-profile-nickname {
-  text-align: center;
-  margin-bottom: 5px;
-  border-radius: 10px;
-  background-color: #abc;
-}
-
 .chat-message {
   display: inline;
+  font-size: 15px;
 }
 
 .chat-time {
   display: inline;
   margin-left: 10px;
+  padding-left: 10px;
+  padding-right: 10px;
   text-align: center;
+  font-size: 11px;
+  color: #fff;
   border-radius: 10px;
-  background-color: #def;
+  background-color: #999;
 }
 
 .chat-box {
   float: left;
-  width: 530px;
+  width: 450px;
   padding: 5px;
-  margin-left: 10px;
-  margin-top: 35px;
+  margin-left: 30px;
+  margin-bottom: 15px;
   border-radius: 10px;
-  background-color: #abc;
+  border-top-left-radius: 0px;
+  background-color: #eee;
 }
 
 .chat-box:before {
   float: left;
   border-radius: 3px 0 10px 0;
-  margin: 5px -10px;
+  margin: -10px;
+  margin-top: -5px;
   width: 10px;
   height: 10px;
   content: '';
-  transform: matrix(1.4,-0.7,1.4,0.7,0,0);
-  -moz-transform: matrix(1.4,-0.7,1.4,0.7,0,0);
-  -webkit-transform: matrix(1.4,-0.7,1.4,0.7,0,0);
-  -o-transform: matrix(1.4,-0.7,1.4,0.7,0,0);
-  background-color: #abc;
+  transform: skewX(45deg);
+  -moz-transform: skewX(45deg);
+  -webkit-transform: skewX(45deg);
+  -o-transform: skewX(45deg);
+  -ms-transform: skewX(45deg);
+  background-color: #eee;
 }
