@@ -1,4 +1,4 @@
-var firc = document.getElementById('firc');
+var firc;
 var server = 'webirc.ozinger.org';
 var port = '8080';
 var encode = 'UTF-8';
@@ -399,3 +399,7 @@ window.onresize = function () {
     tabsElement.style.height = (stageHeight - 30) + 'px';
 };
 window.onresize();
+
+swfobject.embedSWF('./firc2.swf', 'firc', '1px', '1px', '10',
+    null, null, null, {allowScriptAccess: 'always'},
+    function (e) { firc = e.ref; });

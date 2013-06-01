@@ -7,17 +7,14 @@
           href="http://fonts.googleapis.com/earlyaccess/nanumgothic.css">
   </head>
   <body>
-    <object type="application/x-shockwave-flash" data="./firc2.swf" id="firc">
-      <param name="movie" value="./firc2.swf"/>
-      <param name="allowScriptAccess" value="always"/>
-      <embed src="./firc2.swf" allowScriptAccess="always"/>
-    </object>
+    <div id="firc"></div>
     <div class="tab-buttons" id="tab-buttons">
       <button onclick="activeChannel('#')">server</button>
     </div>
     <div id="tabs">
       <div class="tab on" id="server-tab"></div>
     </div>
+    <script src="./swfobject.js"></script>
     <script src="./squircle.js"></script>
   </body>
 </html>
