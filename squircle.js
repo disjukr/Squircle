@@ -8,6 +8,9 @@ var password = '';
 var security = '843';
 
 var currentChannel = '#';
+var leftSideElement = document.getElementById('left-side');
+var rightSideElement = document.getElementById('right-side');
+var centerElement = document.getElementById('center');
 var tabsElement = document.getElementById('tabs');
 var serverTabElement = document.getElementById('server-tab');
 var tabButtonsElement = document.getElementById('tab-buttons');
@@ -397,7 +400,10 @@ function createProfileElement(nickname) {
 window.onresize = function () {
     var stageHeight = ('innerHeight' in window)?
         window.innerHeight : document.documentElement.offsetHeight;
-    tabsElement.style.height = (stageHeight - 30) + 'px';
+    tabsElement.style.height = (stageHeight - 60) + 'px';
+    leftSideElement.style.height = (stageHeight - 80) + 'px';
+    rightSideElement.style.height = (stageHeight - 80) + 'px';
+    centerElement.style.height = stageHeight + 'px';
 };
 window.onresize();
 

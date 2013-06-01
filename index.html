@@ -8,12 +8,23 @@
   </head>
   <body>
     <div id="firc"></div>
-    <div class="tab-buttons" id="tab-buttons">
-      <button onclick="activeChannel('#')">server</button>
+
+    <div id="left-side">
+      <div id="tab-buttons">
+        <button onclick="activeChannel('#')">server</button>
+      </div>
     </div>
-    <div id="tabs">
-      <div class="tab on" id="server-tab"></div>
+
+    <div id="center">
+      <p id="topic"></p>
+      <div id="tabs">
+        <div class="tab on" id="server-tab"></div>
+      </div>
+      <input type="text" id="talk"></input>
     </div>
+
+    <div id="right-side"></div>
+
     <script src="./swfobject.js"></script>
     <script src="./squircle.js"></script>
   </body>
