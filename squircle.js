@@ -392,3 +392,10 @@ function createProfileElement(nickname) {
 
     return profileElement;
 }
+
+window.onresize = function () {
+    var stageHeight = ('innerHeight' in window)?
+        window.innerHeight : document.documentElement.offsetHeight;
+    tabsElement.style.height = (stageHeight - 30) + 'px';
+};
+window.onresize();
