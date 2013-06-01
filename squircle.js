@@ -256,8 +256,9 @@ function sendMessage(channel, message) {
     }
 }
 
-function changeNickname(nickname) {
-    firc.changeNickname(nickname);
+function changeNickname(newNickname) {
+    nickname = newNickname;
+    firc.changeNickname(newNickname);
 }
 
 function joinChannel(channel, password) {
