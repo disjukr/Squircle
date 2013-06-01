@@ -15,8 +15,8 @@
   left: 0;
   overflow-x: hidden;
   overflow-y: scroll;
-  width: 640;
-  background-color: #333;
+  width: 640px;
+  background-color: #ff6;
 }
 
 .tab {
@@ -39,7 +39,8 @@
   padding: 5px;
   width: 380px;
   border-radius: 10px;
-  background-color: #ddd;
+  background-color: #fe3;
+  box-shadow: inset -5px -5px 10px -5px #da0;
 }
 
 .notice-message {
@@ -51,13 +52,13 @@
 .notice-time {
   display: inline;
   margin-left: 10px;
-  padding-left: 10px;
-  padding-right: 10px;
+  padding-left: 5px;
+  padding-right: 5px;
   text-align: center;
   font-size: 11px;
   color: #fff;
   border-radius: 10px;
-  background-color: #999;
+  background-color: #333;
 }
 
 .chat {
@@ -73,7 +74,25 @@
   min-width: 70px;
   font-size: 11px;
   border-radius: 5px;
-  background-color: #eee;
+  color: #fff;
+  background-color: #321;
+  box-shadow: 0 1px #fff;
+}
+
+.owner {
+  background-color: #d33;
+}
+
+.operator {
+  background-color: #3a3;
+}
+
+.half-operator {
+  background-color: #33b;
+}
+
+.voice {
+  background-color: #864;
 }
 
 .chat-img {
@@ -94,13 +113,13 @@
 .chat-time {
   display: inline;
   margin-left: 10px;
-  padding-left: 10px;
-  padding-right: 10px;
+  padding-left: 5px;
+  padding-right: 5px;
   text-align: center;
   font-size: 11px;
   color: #fff;
   border-radius: 10px;
-  background-color: #999;
+  background-color: #333;
 }
 
 .chat-box {
@@ -111,7 +130,8 @@
   margin-bottom: 15px;
   border-radius: 10px;
   border-top-left-radius: 0px;
-  background-color: #eee;
+  background-color: #fff;
+  box-shadow: inset -5px -5px 10px -5px #bbb;
 }
 
 .chat-box:before {
@@ -127,5 +147,5 @@
   -webkit-transform: skewX(45deg);
   -o-transform: skewX(45deg);
   -ms-transform: skewX(45deg);
-  background-color: #eee;
+  background-color: #fff;
 }
