@@ -30,9 +30,8 @@ var FIRCEventListener = function (type, data) {
                 console.log('notice');
                 console.log('from: ' + from);
                 console.log('message: ' + fourth);
-                tabElements[currentChannel].appendChild(
-                    createNoticeElement(from + ': ' + fourth)
-                );
+                appendElementToChannel(currentChannel,
+                    createNoticeElement(from + ': ' + fourth));
             }
         }
         break;
@@ -63,9 +62,8 @@ var FIRCEventListener = function (type, data) {
         tabsElement.appendChild(tabElements[data]);
         tabButtonsElement.appendChild(createTabButtonElement(data));
         activeChannel(data);
-        tabElements[data].appendChild(
-            createNoticeElement(nickname + ' has joined')
-        );
+        appendElementToChannel(data,
+            createNoticeElement(nickname + ' has joined'));
         break;
     case 'onTopic':
         console.log('topic');
@@ -149,9 +147,8 @@ var FIRCEventListener = function (type, data) {
         console.log('user join');
         console.log('channel: ' + data[0]);
         console.log('nickname: ' + data[1]);
-        tabElements[data[0]].appendChild(
-            createNoticeElement(data[1] + ' has joined')
-        );
+        appendElementToChannel(data[0],
+            createNoticeElement(data[1] + ' has joined'));
         break;
     case 'onUserNick':
         console.log('user nickname');
@@ -181,17 +178,16 @@ var FIRCEventListener = function (type, data) {
         console.log('channel: ' + data[0]);
         console.log('nickname: ' + data[1]);
         console.log('message: ' + data[2]);
-        tabElements[data[0]].appendChild(
-            createNoticeElement(data[1] + ' has quit: ' + data[2])
-        );
+        appendElementToChannel(data[0],
+            createNoticeElement(data[1] + ' has quit: ' + data[2]));
         break;
     case 'onUserQuit':
         console.log('user quit');
         console.log('nickname: ' + data[0]);
         console.log('message: ' + data[1]);
-        tabElements[data[0]].appendChild(
-            createNoticeElement(data[1] + ' has quit: ' + data[2])
-        );
+        //TODO: append to all channel which had the user
+        appendElementToChannel(currentChannel,
+            createNoticeElement(data[0] + ' has quit: ' + data[1]));
         break;
     case 'onKick':
         console.log('user kick');
@@ -201,12 +197,12 @@ var FIRCEventListener = function (type, data) {
         console.log('message: ' + data[3]);
         console.log('is me: ' + data[4]);
         if (data[4]) {
-            tabElements[data[0]].appendChild(
+            appendElementToChannel(data[0],
                 createNoticeElement('You have been kicked by' +
                     data[2] + ' because ' + data[3]));
         }
         else {
-            tabElements[data[0]].appendChild(
+            appendElementToChannel(data[0],
                 createNoticeElement(data[1] + ' have been kicked by' +
                     data[2] + ' because ' + data[3]));
         }
@@ -225,9 +221,7 @@ var FIRCEventListener = function (type, data) {
         console.log('channel: ' + data[0]);
         console.log('nickname: ' + data[1]);
         console.log('message: ' + data[2]);
-        tabElements[data[0]].appendChild(
-            createChatElement(data[1], data[2])
-        );
+        appendElementToChannel(data[0], createChatElement(data[1], data[2]));
         break;
     case 'onMyMessage':
         console.log('my message');
@@ -243,7 +237,7 @@ var FIRCEventListener = function (type, data) {
     case 'onServerMessage':
         console.log('server message');
         console.log('message: ' + data);
-        serverTabElement.appendChild(createChatElement('', data));
+        appendElementToServer(createChatElement('', data));
         break;
     }
     console.log('');
@@ -306,7 +300,24 @@ function formatTime(time) {
 function activeChannel(channel) {
     tabElements[currentChannel].className = 'tab off';
     tabElements[channel].className = 'tab on';
+    tabsElement.scrollTop = tabsElement.scrollHeight;
     currentChannel = channel;
+}
+
+function appendElementToServer(element) {
+    var needScroll = tabsElement.offsetHeight +
+        tabsElement.scrollTop >= tabsElement.scrollHeight;
+    serverTabElement.appendChild(element);
+    if (needScroll)
+        tabsElement.scrollTop = tabsElement.scrollHeight;
+}
+
+function appendElementToChannel(channel, element) {
+    var needScroll = tabsElement.offsetHeight +
+        tabsElement.scrollTop >= tabsElement.scrollHeight;
+    tabElements[channel].appendChild(element);
+    if (needScroll)
+        tabsElement.scrollTop = tabsElement.scrollHeight;
 }
 
 function createTabButtonElement(channel) {
