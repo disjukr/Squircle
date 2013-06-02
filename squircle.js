@@ -3,7 +3,7 @@ var server = 'webirc.ozinger.org';
 var port = '8080';
 var encode = 'UTF-8';
 var nickname = defaultNickname();
-var channel = '#abcdef';
+var initialChannel = '#abcdef';
 var password = '';
 var security = '843';
 
@@ -11,10 +11,12 @@ var currentChannel = '#';
 var leftSideElement = document.getElementById('left-side');
 var rightSideElement = document.getElementById('right-side');
 var centerElement = document.getElementById('center');
+var topicElement = document.getElementById('topic');
 var tabsElement = document.getElementById('tabs');
 var serverTabElement = document.getElementById('server-tab');
 var tabButtonsElement = document.getElementById('tab-buttons');
 var tabElements = {'#': serverTabElement};
+var topics = {'#': 'Squircle - firc, ozinger based web irc client'};
 
 var FIRCEventListener = function (type, data) {
     switch (type) {
@@ -24,21 +26,34 @@ var FIRCEventListener = function (type, data) {
             var first = splittedData.shift();
             var second = splittedData.shift();
             var third = splittedData.shift();
-            var fourth = splittedData.join(' ').substr(1);
-            if (second == 'NOTICE' && third != 'Auth') {
-                var from = first.split('!')[0];
-                console.log('notice');
-                console.log('from: ' + from);
-                console.log('message: ' + fourth);
-                appendElementToChannel(currentChannel,
-                    createNoticeElement(from + ': ' + fourth));
+            switch (second) {
+            case 'NOTICE':
+                if (third != 'Auth') {
+                    var message = splittedData.join(' ').substr(1);
+                    var from = first.split('!')[0];
+                    console.log('notice');
+                    console.log('from: ' + from);
+                    console.log('message: ' + message);
+                    appendElementToChannel(currentChannel,
+                        createNoticeElement(from + ': ' + message));
+                }
+                break;
+            case '482':
+                var channel = splittedData.shift();
+                var message = splittedData.join(' ').substr(1);
+                console.log('error');
+                console.log('channel: ' + channel);
+                console.log('message: ' + message);
+                appendElementToChannel(channel, createNoticeElement(message));
+                topicElement.value = topics[channel];
+                break;
             }
         }
         break;
     case 'onReady':
         console.log('ready');
         firc.setInfo(server, port, encode, nickname,
-                     channel, password, security);
+                     initialChannel, password, security);
         firc.connect();
         break;
     case 'onConnect':
@@ -47,12 +62,14 @@ var FIRCEventListener = function (type, data) {
     case 'onError':
         console.log('error');
         console.log('error code: ' + data[0]);
-        if (data[0] == 106) { //nickname
+        switch (data[0]) {
+        case 106: //nickname
             console.log('change nickname and reconnect');
             nickname = defaultNickname();
             firc.setInfo(server, port, encode, nickname,
-                         channel, password, security);
+                         initialChannel, password, security);
             firc.connect();
+            break;
         }
         break;
     case 'onJoin':
@@ -69,12 +86,19 @@ var FIRCEventListener = function (type, data) {
         console.log('topic');
         console.log('channel: ' + data[0]);
         console.log('topic: ' + data[1]);
+        topics[data[0]] = data[1];
+        topicElement.value = topics[currentChannel];
         break;
     case 'onTopicChange':
         console.log('topic change');
         console.log('channel: ' + data[0]);
         console.log('nickname: ' + data[1]);
         console.log('topic: ' + data[2]);
+        topics[data[0]] = data[2];
+        appendElementToChannel(data[0],
+            createNoticeElement(data[1] +
+                ' has changed the topic to: ' + data[2]));
+        topicElement.value = topics[currentChannel];
         break;
     case 'onChannelListStart':
         console.log('channel list start');
@@ -258,6 +282,10 @@ function changeNickname(newNickname) {
     firc.changeNickname(newNickname);
 }
 
+function changeChannelTopic(channel, topic) {
+    firc.channelTopic(channel, topic);
+}
+
 function joinChannel(channel, password) {
     firc.joinChannel(channel, password);
 }
@@ -283,7 +311,7 @@ function requestChannelMode(channel) {
 }
 
 function defaultNickname() {
-    return 'squidward' + parseInt(Math.random() * 10000);
+    return 'ika' + parseInt(Math.random() * 10000);
 }
 
 function formatTime(time) {
@@ -301,6 +329,7 @@ function activeChannel(channel) {
     tabElements[currentChannel].className = 'tab off';
     tabElements[channel].className = 'tab on';
     tabsElement.scrollTop = tabsElement.scrollHeight;
+    topicElement.value = topics[channel]? topics[channel] : '';
     currentChannel = channel;
 }
 
@@ -412,11 +441,23 @@ window.onresize = function () {
     var stageHeight = ('innerHeight' in window)?
         window.innerHeight : document.documentElement.offsetHeight;
     tabsElement.style.height = (stageHeight - 60) + 'px';
-    leftSideElement.style.height = (stageHeight - 80) + 'px';
-    rightSideElement.style.height = (stageHeight - 80) + 'px';
+    leftSideElement.style.height = (stageHeight - 20) + 'px';
+    rightSideElement.style.height = (stageHeight - 20) + 'px';
     centerElement.style.height = stageHeight + 'px';
+    tabsElement.scrollTop = tabsElement.scrollHeight;
 };
 window.onresize();
+
+topicElement.value = topics[currentChannel];
+topicElement.onkeydown = function () {
+    if (event.keyCode == 13) { //enter
+        topicElement.blur();
+    }
+}
+topicElement.onblur = function () {
+    if (topicElement.value != topics[currentChannel])
+        changeChannelTopic(currentChannel, topicElement.value);
+}
 
 swfobject.embedSWF('./firc2.swf', 'firc', '1px', '1px', '10',
     null, null, null, {allowScriptAccess: 'always'},
