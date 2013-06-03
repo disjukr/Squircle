@@ -3,7 +3,7 @@ var server = 'webirc.ozinger.org';
 var port = '8080';
 var encode = 'UTF-8';
 var nickname = defaultNickname();
-var initialChannel = '#abcdef';
+var channel = '#abcdef';
 var password = '';
 var security = '843';
 
@@ -19,252 +19,288 @@ var tabElements = {'#': serverTabElement};
 var topics = {'#': 'Squircle - firc, ozinger based web irc client'};
 
 var FIRCEventListener = function (type, data) {
-    switch (type) {
-    case 'debug':
-        if (data.substr(0, 8) == 'RECV : :') {
-            var splittedData = data.substr(8).split(' ');
-            var first = splittedData.shift();
-            var second = splittedData.shift();
-            var third = splittedData.shift();
-            switch (second) {
-            case 'NOTICE':
-                if (third != 'Auth') {
-                    var message = splittedData.join(' ').substr(1);
-                    var from = first.split('!')[0];
-                    console.log('notice');
-                    console.log('from: ' + from);
-                    console.log('message: ' + message);
-                    appendElementToChannel(currentChannel,
-                        createNoticeElement(from + ': ' + message));
-                }
-                break;
-            case '482':
-                var channel = splittedData.shift();
-                var message = splittedData.join(' ').substr(1);
-                console.log('error');
-                console.log('channel: ' + channel);
+    var handler = FIRCEventHandler[type];
+    if (handler && handler.apply) {
+        var dataType = typeof data;
+        if (dataType == 'object')
+            handler.apply(this, data);
+        else
+            handler(data);
+    }
+}
+
+var FIRCEventHandler = {};
+
+FIRCEventHandler['debug'] = function (raw) {
+    if (raw.substr(0, 8) == 'RECV : :') {
+        var splittedRaw = raw.substr(8).split(' ');
+        var first = splittedRaw.shift();
+        var second = splittedRaw.shift();
+        var third = splittedRaw.shift();
+        switch (second) {
+        case 'NOTICE':
+            if (third != 'Auth') {
+                var message = splittedRaw.join(' ').substr(1);
+                var from = first.split('!')[0];
+                console.log('notice');
+                console.log('from: ' + from);
                 console.log('message: ' + message);
-                appendElementToChannel(channel, createNoticeElement(message));
-                topicElement.value = topics[channel];
-                break;
+                appendElementToChannel(currentChannel,
+                    createNoticeElement(from + ': ' + message));
             }
+            break;
+        case '482':
+            var channel = splittedRaw.shift();
+            var message = splittedRaw.join(' ').substr(1);
+            console.log('error');
+            console.log('channel: ' + channel);
+            console.log('message: ' + message);
+            appendElementToChannel(channel, createNoticeElement(message));
+            topicElement.value = topics[channel];
+            break;
         }
-        break;
-    case 'onReady':
-        console.log('ready');
+    }
+}
+
+FIRCEventHandler['onReady'] = function () {
+    console.log('ready');
+    firc.setInfo(server, port, encode, nickname,
+                 channel, password, security);
+    firc.connect();
+}
+
+FIRCEventHandler['onConnect'] = function () {
+    console.log('connect');
+}
+
+FIRCEventHandler['onError'] = function (errorCode) {
+    console.log('error');
+    console.log('error code: ' + errorCode);
+    switch (errorCode) {
+    case 106: //nickname
+        nickname = defaultNickname();
         firc.setInfo(server, port, encode, nickname,
-                     initialChannel, password, security);
+                     channel, password, security);
         firc.connect();
         break;
-    case 'onConnect':
-        console.log('connect');
-        break;
-    case 'onError':
-        console.log('error');
-        console.log('error code: ' + data[0]);
-        switch (data[0]) {
-        case 106: //nickname
-            console.log('change nickname and reconnect');
-            nickname = defaultNickname();
-            firc.setInfo(server, port, encode, nickname,
-                         initialChannel, password, security);
-            firc.connect();
+    }
+}
+
+FIRCEventHandler['onJoin'] = function (channel) {
+    console.log('join');
+    console.log('channel: ' + channel);
+    tabElements[channel] = createTabElement();
+    tabsElement.appendChild(tabElements[channel]);
+    tabButtonsElement.appendChild(createTabButtonElement(channel));
+    activeChannel(channel);
+    appendElementToChannel(channel,
+        createNoticeElement(nickname + ' has joined'));
+}
+
+FIRCEventHandler['onTopic'] = function (channel, topic) {
+    console.log('topic');
+    console.log('channel: ' + channel);
+    console.log('topic: ' + topic);
+    topics[channel] = topic;
+    topicElement.value = topics[currentChannel];
+}
+
+FIRCEventHandler['onTopicChange'] = function (channel, nickname, topic) {
+    console.log('topic change');
+    console.log('channel: ' + channel);
+    console.log('nickname: ' + nickname);
+    console.log('topic: ' + topic);
+    topics[channel] = topic;
+    appendElementToChannel(channel,
+        createNoticeElement(nickname +
+            ' has changed the topic to: ' + topic));
+    topicElement.value = topics[currentChannel];
+}
+
+FIRCEventHandler['onChannelListStart'] = function () {
+    console.log('channel list start');
+}
+
+FIRCEventHandler['onChannelList'] = function (channel, userCount,
+                                              topic, mode) {
+    console.log('channel: ' + channel);
+    console.log('user count: ' + userCount);
+    console.log('topic: ' + topic);
+    console.log('mode: ' + mode);
+}
+
+FIRCEventHandler['onChannelListEnd'] = function () {
+    console.log('channel list end');
+}
+
+FIRCEventHandler['onChannelKey'] = function (channel) {
+    console.log('channel key required');
+    console.log('channel: ' + channel);
+}
+
+FIRCEventHandler['onChannelMode'] = function (channel, mode, key, limit) {
+    console.log('channel mode');
+    console.log('channel: ' + channel);
+    console.log('mode: ' + mode);
+    console.log('key: ' + key);
+    console.log('limit: ' + limit);
+}
+
+FIRCEventHandler['onChannelChange'] = function (channel, mode, nickname) {
+    console.log('channel change');
+    console.log('channel: ' + channel);
+    console.log('mode: ' + mode);
+    if (mode.charAt(1) == 'h') {
+        requestUserList(channel); //Deal with firc bug
+    }
+    console.log('nickname: ' + nickname);
+}
+
+FIRCEventHandler['onBanList'] = function (channel, nickname, from, time) {
+    console.log('ban list');
+    console.log('channel: ' + channel);
+    console.log('nickname: ' + nickname);
+    console.log('from: ' + from);
+    console.log('time: ' + time);
+}
+
+FIRCEventHandler['onBanListEnd'] = function () {
+    console.log('ban list end');
+}
+
+FIRCEventHandler['onUserList'] = function (channel, users) {
+    console.log('user list');
+    console.log('channel: ' + channel);
+    console.log('users: ' + users);
+    for (var i = 0; i < users.length; ++i) {
+        var user = users[i];
+        switch (user.charAt(0)) {
+        case '~':
+            console.log('owner: ' + user.substr(1));
+            break;
+        case '@':
+            console.log('operator: ' + user.substr(1));
+            break;
+        case '%':
+            console.log('half operator: ' + user.substr(1));
+            break;
+        case '+':
+            console.log('voice user: ' + user.substr(1));
+            break;
+        default:
+            console.log('user: ' + user);
             break;
         }
+    }
+}
+
+FIRCEventHandler['onUserJoin'] = function (channel, nickname) {
+    console.log('user join');
+    console.log('channel: ' + channel);
+    console.log('nickname: ' + nickname);
+    appendElementToChannel(channel,
+        createNoticeElement(nickname + ' has joined'));
+}
+
+FIRCEventHandler['onUserNick'] = function (user, nickname) {
+    console.log('user nickname');
+    console.log('user: ' + user);
+    console.log('nickname: ' + nickname);
+}
+
+FIRCEventHandler['onUserMode'] = function (channel, mode, nickname, from) {
+    console.log('user mode');
+    console.log('channel: ' + channel);
+    console.log('raw mode: ' + mode);
+    switch (mode.charAt(1)) {
+    case 'q':
+        console.log('mode: ' + 'Owner');
         break;
-    case 'onJoin':
-        console.log('join');
-        console.log('channel: ' + data);
-        tabElements[data] = createTabElement();
-        tabsElement.appendChild(tabElements[data]);
-        tabButtonsElement.appendChild(createTabButtonElement(data));
-        activeChannel(data);
-        appendElementToChannel(data,
-            createNoticeElement(nickname + ' has joined'));
+    case 'o':
+        console.log('mode: ' + 'Operator');
         break;
-    case 'onTopic':
-        console.log('topic');
-        console.log('channel: ' + data[0]);
-        console.log('topic: ' + data[1]);
-        topics[data[0]] = data[1];
-        topicElement.value = topics[currentChannel];
-        break;
-    case 'onTopicChange':
-        console.log('topic change');
-        console.log('channel: ' + data[0]);
-        console.log('nickname: ' + data[1]);
-        console.log('topic: ' + data[2]);
-        topics[data[0]] = data[2];
-        appendElementToChannel(data[0],
-            createNoticeElement(data[1] +
-                ' has changed the topic to: ' + data[2]));
-        topicElement.value = topics[currentChannel];
-        break;
-    case 'onChannelListStart':
-        console.log('channel list start');
-        break;
-    case 'onChannelList':
-        console.log('channel: ' + data[0]);
-        console.log('user number: ' + data[1]);
-        console.log('topic: ' + data[2]);
-        console.log('mode: ' + data[3]);
-        break;
-    case 'onChannelListEnd':
-        console.log('channel list end');
-        break;
-    case 'onChannelKey':
-        console.log('channel key required');
-        console.log('channel: ' + data);
-        break;
-    case 'onChannelMode':
-        console.log('channel mode');
-        console.log('channel: ' + data[0]);
-        console.log('mode: ' + data[1]);
-        console.log('key: ' + data[2]);
-        console.log('limit: ' + data[3]);
-        break;
-    case 'onChannelChange':
-        console.log('channel change');
-        console.log('channel: ' + data[0]);
-        console.log('mode: ' + data[1]);
-        if (data[1].charAt(1) == 'h') {
-            requestUserList(data[0]); //Deal with firc bug
-        }
-        console.log('nickname: ' + data[2]);
-        break;
-    case 'onBanList':
-        console.log('ban list');
-        console.log('channel: ' + data[0]);
-        console.log('nickname: ' + data[1]);
-        console.log('from: ' + data[2]);
-        console.log('time: ' + data[3]);
-        break;
-    case 'onBanListEnd':
-        console.log('ban list end');
-        break;
-    case 'onUserList':
-        console.log('user list');
-        console.log('channel: ' + data[0]);
-        console.log('users: ' + data[1]);
-        for (var i = 0; i < data[1].length; ++i) {
-            var user = data[1][i];
-            switch (user.charAt(0)) {
-            case '~':
-                console.log('owner: ' + user.substr(1));
-                break;
-            case '@':
-                console.log('operator: ' + user.substr(1));
-                break;
-            case '%':
-                console.log('half operator: ' + user.substr(1));
-                break;
-            case '+':
-                console.log('voice user: ' + user.substr(1));
-                break;
-            default:
-                console.log('user: ' + user);
-                break;
-            }
-        }
-        break;
-    case 'onUserJoin':
-        console.log('user join');
-        console.log('channel: ' + data[0]);
-        console.log('nickname: ' + data[1]);
-        appendElementToChannel(data[0],
-            createNoticeElement(data[1] + ' has joined'));
-        break;
-    case 'onUserNick':
-        console.log('user nickname');
-        console.log('user: ' + data[0]);
-        console.log('nickname: ' + data[1]);
-        break;
-    case 'onUserMode':
-        console.log('user mode');
-        console.log('channel: ' + data[0]);
-        console.log('raw mode: ' + data[1]);
-        switch (data[1].charAt(1)) {
-        case 'q':
-            console.log('mode: ' + 'Owner');
-            break;
-        case 'o':
-            console.log('mode: ' + 'Operator');
-            break;
-        case 'v':
-            console.log('mode: ' + 'Voice');
-            break;
-        }
-        console.log('nickname: ' + data[2]);
-        console.log('from: ' + data[3]);
-        break;
-    case 'onUserPart':
-        console.log('user part');
-        console.log('channel: ' + data[0]);
-        console.log('nickname: ' + data[1]);
-        console.log('message: ' + data[2]);
-        appendElementToChannel(data[0],
-            createNoticeElement(data[1] + ' has quit: ' + data[2]));
-        break;
-    case 'onUserQuit':
-        console.log('user quit');
-        console.log('nickname: ' + data[0]);
-        console.log('message: ' + data[1]);
-        //TODO: append to all channel which had the user
-        appendElementToChannel(currentChannel,
-            createNoticeElement(data[0] + ' has quit: ' + data[1]));
-        break;
-    case 'onKick':
-        console.log('user kick');
-        console.log('channel: ' + data[0]);
-        console.log('nickname: ' + data[1]);
-        console.log('from: ' + data[2]);
-        console.log('message: ' + data[3]);
-        console.log('is me: ' + data[4]);
-        if (data[4]) {
-            appendElementToChannel(data[0],
-                createNoticeElement('You have been kicked by' +
-                    data[2] + ' because ' + data[3]));
-        }
-        else {
-            appendElementToChannel(data[0],
-                createNoticeElement(data[1] + ' have been kicked by' +
-                    data[2] + ' because ' + data[3]));
-        }
-        break;
-    case 'onWhoIs':
-        console.log('whois');
-        console.log('nickname: ' + data[0]);
-        console.log('realname: ' + data[1]);
-        console.log('ip: ' + data[2]);
-        console.log('channel: ' + data[3]);
-        console.log('idle: ' + data[4]);
-        console.log('connected: ' + data[5]);
-        break;
-    case 'onMessage':
-        console.log('message');
-        console.log('channel: ' + data[0]);
-        console.log('nickname: ' + data[1]);
-        console.log('message: ' + data[2]);
-        appendElementToChannel(data[0], createChatElement(data[1], data[2]));
-        break;
-    case 'onMyMessage':
-        console.log('my message');
-        console.log('channel: ' + data[0]);
-        console.log('nickname: ' + data[1]);
-        console.log('message: ' + data[2]);
-        break;
-    case 'onPrivMessage':
-        console.log('private message');
-        console.log('nickname: ' + data[0]);
-        console.log('message: ' + data[1]);
-        break;
-    case 'onServerMessage':
-        console.log('server message');
-        console.log('message: ' + data);
-        appendElementToServer(createChatElement('', data));
+    case 'v':
+        console.log('mode: ' + 'Voice');
         break;
     }
-    console.log('');
+    console.log('nickname: ' + nickname);
+    console.log('from: ' + from);
+}
+
+FIRCEventHandler['onUserPart'] = function (channel, nickname, message) {
+    console.log('user part');
+    console.log('channel: ' + channel);
+    console.log('nickname: ' + nickname);
+    console.log('message: ' + message);
+    appendElementToChannel(channel,
+        createNoticeElement(nickname + ' has quit: ' + message));
+}
+
+FIRCEventHandler['onUserQuit'] = function (nickname, message) {
+    console.log('user quit');
+    console.log('nickname: ' + nickname);
+    console.log('message: ' + message);
+    //TODO: append to all channel which had the user
+    appendElementToChannel(currentChannel,
+        createNoticeElement(nickname + ' has quit: ' + message));
+}
+
+FIRCEventHandler['onKick'] = function (channel, nickname,
+                                       from, message, isMe) {
+    console.log('user kick');
+    console.log('channel: ' + channel);
+    console.log('nickname: ' + nickname);
+    console.log('from: ' + from);
+    console.log('message: ' + message);
+    console.log('is me: ' + isMe);
+    if (isMe) {
+        appendElementToChannel(channel,
+            createNoticeElement('You have been kicked by' +
+                from + ' because ' + message));
+    }
+    else {
+        appendElementToChannel(channel,
+            createNoticeElement(nickname + ' have been kicked by' +
+                from + ' because ' + message));
+    }
+}
+
+FIRCEventHandler['onWhoIs'] = function (nickname, realname, ip,
+                                        channel, idle, connected) {
+    console.log('whois');
+    console.log('nickname: ' + nickname);
+    console.log('realname: ' + realname);
+    console.log('ip: ' + ip);
+    console.log('channel: ' + channel);
+    console.log('idle: ' + idle);
+    console.log('connected: ' + connected);
+}
+
+FIRCEventHandler['onMessage'] = function (channel, nickname, message) {
+    console.log('message');
+    console.log('channel: ' + channel);
+    console.log('nickname: ' + nickname);
+    console.log('message: ' + message);
+    appendElementToChannel(channel, createChatElement(nickname, message));
+}
+
+FIRCEventHandler['onMyMessage'] = function (channel, nickname, message) {
+    console.log('my message');
+    console.log('channel: ' + channel);
+    console.log('nickname: ' + nickname);
+    console.log('message: ' + message);
+}
+
+FIRCEventHandler['onPrivMessage'] = function (nickname, message) {
+    console.log('private message');
+    console.log('nickname: ' + nickname);
+    console.log('message: ' + message);
+}
+
+FIRCEventHandler['onServerMessage'] = function (message) {
+    console.log('server message');
+    console.log('message: ' + message);
+    appendElementToServer(createChatElement('', message));
 }
 
 function sendIrcCommand(message) {
@@ -353,8 +389,8 @@ function createTabButtonElement(channel) {
     var tabButtonElement = document.createElement('button');
     tabButtonElement.textContent = channel;
     tabButtonElement.onclick = function () {
-        activeChannel(this);
-    }.bind(channel);
+        activeChannel(channel);
+    }.bind(this);
     return tabButtonElement;
 }
 
