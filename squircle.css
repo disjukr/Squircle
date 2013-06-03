@@ -204,6 +204,8 @@ body {
   border-top-left-radius: 0px;
   background-color: #fff;
   box-shadow: inset -5px -5px 10px -5px #bbb;
+
+  word-break: break-all;
 }
 
 .chat-box:before {
@@ -220,4 +222,10 @@ body {
   -o-transform: skewX(45deg);
   -ms-transform: skewX(45deg);
   background-color: #fff;
+}
+
+.linkInMessage {
+  color:blue;
+  text-decoration:none;
+  cursor:pointer;
 }
