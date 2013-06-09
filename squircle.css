@@ -50,23 +50,38 @@ body {
   font-size: 11px;
   font-family: 'Nanum Gothic';
   font-weight: bold;
-  color: #334;
-  background-color: #aab;
+  color: #433;
+  background-color: #e96;
 }
 
-#talk {
-  display: block;
+#nickname {
+  display: inline-block;
   margin: 0;
   padding: 0;
   border: 0;
   outline: none;
-  width: 100%;
+  width: 100px;
   height: 30px;
   text-indent: 10px;
   font-size: 11px;
   font-family: 'Nanum Gothic';
   font-weight: bold;
-  background-color: #def;
+  color: #ffe;
+  background-color: #a54;
+}
+
+#talk {
+  display: inline-block;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  outline: none;
+  width: 540px;
+  height: 30px;
+  text-indent: 10px;
+  font-size: 11px;
+  font-family: 'Nanum Gothic';
+  background-color: #d95;
 }
 
 #tab-buttons {
@@ -84,7 +99,6 @@ body {
 }
 
 .tab {
-  height: 100%;
 }
 
 .on {
@@ -116,7 +130,7 @@ body {
 }
 
 .notice-time {
-  display: inline;
+  display: inline-block;
   margin-left: 10px;
   padding-left: 5px;
   padding-right: 5px;
@@ -181,7 +195,7 @@ body {
 }
 
 .chat-time {
-  display: inline;
+  display: inline-block;
   margin-left: 10px;
   padding-left: 5px;
   padding-right: 5px;

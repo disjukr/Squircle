@@ -12,6 +12,7 @@ var leftSideElement = document.getElementById('left-side');
 var rightSideElement = document.getElementById('right-side');
 var centerElement = document.getElementById('center');
 var topicElement = document.getElementById('topic');
+var nicknameElement = document.getElementById('nickname');
 var tabsElement = document.getElementById('tabs');
 var serverTabElement = document.getElementById('server-tab');
 var tabButtonsElement = document.getElementById('tab-buttons');
@@ -77,12 +78,15 @@ FIRCEventHandler['onError'] = function (errorCode) {
     console.log('error');
     console.log('error code: ' + errorCode);
     switch (errorCode) {
-    case 106: //nickname
+    case 106:
         nickname = defaultNickname();
         firc.setInfo(server, port, encode, nickname,
                      channel, password, security);
         firc.connect();
         break;
+    case 433:
+        nickname = nickname + '_';
+        changeNickname(nickname);
     }
 }
 
@@ -206,6 +210,9 @@ FIRCEventHandler['onUserNick'] = function (user, nickname) {
     console.log('user nickname');
     console.log('user: ' + user);
     console.log('nickname: ' + nickname);
+    //TODO: append to all channel which have the user
+    appendElementToChannel(currentChannel,
+        createNoticeElement(user + ' now known as ' + nickname));
 }
 
 FIRCEventHandler['onUserMode'] = function (channel, mode, nickname, from) {
@@ -314,7 +321,7 @@ function sendMessage(channel, message) {
 }
 
 function changeNickname(newNickname) {
-    nickname = newNickname;
+    nicknameElement.value = nickname = newNickname;
     firc.changeNickname(newNickname);
 }
 
@@ -498,6 +505,18 @@ topicElement.onkeydown = function () {
 topicElement.onblur = function () {
     if (topicElement.value != topics[currentChannel])
         changeChannelTopic(currentChannel, topicElement.value);
+}
+
+nicknameElement.value = nickname;
+nicknameElement.onkeydown = function () {
+    if (event.keyCode == 13) { //enter
+        nicknameElement.blur();
+    }
+}
+nicknameElement.onblur = function () {
+    nicknameElement.value = nicknameElement.value.split(/\s/).join('');
+    if (nicknameElement.value != nickname)
+        changeNickname(nicknameElement.value);
 }
 
 swfobject.embedSWF('./firc2.swf', 'firc', '1px', '1px', '10',
