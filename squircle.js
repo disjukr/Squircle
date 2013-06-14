@@ -519,8 +519,9 @@ window.onresize = function () {
 window.onresize();
 
 topicElement.value = topics[currentChannel];
-topicElement.onkeydown = function () {
-    if (event.keyCode == 13) { //enter
+topicElement.onkeydown = function (e) {
+    var keyCode = e.keyCode? e.keyCode : event.keyCode;
+    if (keyCode == 13) { //enter
         topicElement.blur();
     }
 }
@@ -530,8 +531,9 @@ topicElement.onblur = function () {
 }
 
 nicknameElement.value = nickname;
-nicknameElement.onkeydown = function () {
-    if (event.keyCode == 13) { //enter
+nicknameElement.onkeydown = function (e) {
+    var keyCode = e.keyCode? e.keyCode : event.keyCode;
+    if (keyCode == 13) { //enter
         nicknameElement.blur();
     }
 }
@@ -542,8 +544,9 @@ nicknameElement.onblur = function () {
 }
 
 talkElement.value = '';
-talkElement.onkeydown = function () {
-    if (event.keyCode == 13) { //enter
+talkElement.onkeydown = function (e) {
+    var keyCode = e.keyCode? e.keyCode : event.keyCode;
+    if (keyCode == 13) { //enter
         sendMessage(currentChannel, talkElement.value);
         talkElement.value = '';
     }
