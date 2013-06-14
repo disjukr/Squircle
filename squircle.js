@@ -411,11 +411,7 @@ function createNoticeElement(message, time) {
     messageElement.textContent = message;
     messageElement.className = 'notice-message';
 
-    time = time || new Date();
-    var timeElement = document.createElement('time');
-    timeElement.className = 'notice-time';
-    timeElement.dateTime = time;
-    timeElement.textContent = formatTime(time);
+    var timeElement = createTimeElement(time);
 
     var noticeElement = document.createElement('div');
     noticeElement.className = 'notice';
@@ -441,11 +437,7 @@ function createChatElement(nickname, message, time) {
     messageElement.innerHTML = plainTolink(message);
     messageElement.className = 'chat-message';
 
-    time = time || new Date();
-    var timeElement = document.createElement('time');
-    timeElement.className = 'chat-time';
-    timeElement.dateTime = time;
-    timeElement.textContent = formatTime(time);
+    var timeElement = createTimeElement(time);
 
     var boxElement = document.createElement('div');
     boxElement.className = 'chat-box';
@@ -463,6 +455,15 @@ function createChatElement(nickname, message, time) {
     wrapElement.style.clear = 'both';
 
     return wrapElement;
+}
+
+function createTimeElement(time) {
+    time = time || new Date();
+    var timeElement = document.createElement('time');
+    timeElement.className = 'time';
+    timeElement.dateTime = time;
+    timeElement.textContent = formatTime(time);
+    return timeElement;
 }
 
 function createProfileElement(nickname) {

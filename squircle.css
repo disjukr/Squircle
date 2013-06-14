@@ -110,6 +110,19 @@ body {
   visibility: hidden;
 }
 
+.time {
+  display: inline-block;
+  margin-left: 10px;
+  padding-left: 5px;
+  padding-right: 5px;
+  text-align: center;
+  font-size: 9px;
+  font-family: 'Nanum Gothic';
+  color: #fff;
+  border-radius: 10px;
+  background-color: #333;
+}
+
 .notice {
   display: block;
   text-align: center;
@@ -127,19 +140,6 @@ body {
   font-weight: bold;
   font-family: 'Nanum Gothic';
   color: #940;
-}
-
-.notice-time {
-  display: inline-block;
-  margin-left: 10px;
-  padding-left: 5px;
-  padding-right: 5px;
-  text-align: center;
-  font-size: 9px;
-  font-family: 'Nanum Gothic';
-  color: #fff;
-  border-radius: 10px;
-  background-color: #333;
 }
 
 .chat {
@@ -192,19 +192,6 @@ body {
   font-size: 15px;
   font-family: 'Nanum Gothic';
   color: #000;
-}
-
-.chat-time {
-  display: inline-block;
-  margin-left: 10px;
-  padding-left: 5px;
-  padding-right: 5px;
-  text-align: center;
-  font-size: 9px;
-  font-family: 'Nanum Gothic';
-  color: #fff;
-  border-radius: 10px;
-  background-color: #333;
 }
 
 .chat-box {
