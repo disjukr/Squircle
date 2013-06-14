@@ -13,6 +13,7 @@ var rightSideElement = document.getElementById('right-side');
 var centerElement = document.getElementById('center');
 var topicElement = document.getElementById('topic');
 var nicknameElement = document.getElementById('nickname');
+var talkElement = document.getElementById('talk');
 var tabsElement = document.getElementById('tabs');
 var serverTabElement = document.getElementById('server-tab');
 var tabButtonsElement = document.getElementById('tab-buttons');
@@ -296,6 +297,7 @@ FIRCEventHandler['onMyMessage'] = function (channel, nickname, message) {
     console.log('channel: ' + channel);
     console.log('nickname: ' + nickname);
     console.log('message: ' + message);
+    appendElementToChannel(channel, createMyChatElement(message));
 }
 
 FIRCEventHandler['onPrivMessage'] = function (nickname, message) {
@@ -425,6 +427,25 @@ function createNoticeElement(message, time) {
     return wrapElement;
 }
 
+function createMyChatElement(message, time) {
+    var messageElement = document.createElement('p');
+    messageElement.innerHTML = plainToLink(message);
+    messageElement.className = 'chat-message';
+
+    var timeElement = createTimeElement(time);
+
+    var boxElement = document.createElement('div');
+    boxElement.className = 'my-chat-box';
+    boxElement.appendChild(messageElement);
+    boxElement.appendChild(timeElement);
+
+    var wrapElement = document.createElement('div');
+    wrapElement.appendChild(boxElement);
+    wrapElement.style.clear = 'both';
+
+    return wrapElement;
+}
+
 function createChatElement(nickname, message, time) {
     var profileElement = createProfileElement(nickname);
     profileElement.className = 'chat-img';
@@ -483,7 +504,7 @@ function createProfileElement(nickname) {
 
 function plainToLink(text) {
     var exp = /(\b(https?|ftp|file):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/ig;
-    return text.replace(exp, "<a href='$1' target='_blank' class='linkInMessage'>$1</a>"); 
+    return text.replace(exp, "<a href='$1' target='_blank' class='link'>$1</a>");
 }
 
 window.onresize = function () {
@@ -519,6 +540,16 @@ nicknameElement.onblur = function () {
     if (nicknameElement.value != nickname)
         changeNickname(nicknameElement.value);
 }
+
+talkElement.value = '';
+talkElement.onkeydown = function () {
+    if (event.keyCode == 13) { //enter
+        sendMessage(currentChannel, talkElement.value);
+        talkElement.value = '';
+    }
+}
+
+talkElement.focus();
 
 swfobject.embedSWF('./firc2.swf', 'firc', '1px', '1px', '10',
     null, null, null, {allowScriptAccess: 'always'},

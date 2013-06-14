@@ -131,7 +131,6 @@ body {
   width: 360px;
   border-radius: 10px;
   background-color: #fe3;
-  box-shadow: inset -5px -5px 10px -5px #da0;
 }
 
 .notice-message {
@@ -158,7 +157,6 @@ body {
   border-radius: 5px;
   color: #fff;
   background-color: #321;
-  box-shadow: 0 1px #fff;
 }
 
 .owner {
@@ -204,8 +202,6 @@ body {
   border-radius: 10px;
   border-top-left-radius: 0px;
   background-color: #fff;
-  box-shadow: inset -5px -5px 10px -5px #bbb;
-
   word-break: break-all;
 }
 
@@ -225,8 +221,42 @@ body {
   background-color: #fff;
 }
 
-.linkInMessage {
-  color:blue;
-  text-decoration:none;
-  cursor:pointer;
+.my-chat-box {
+  float: right;
+  width: 430px;
+  padding: 10px;
+  padding-top: 5px;
+  margin-right: 30px;
+  margin-bottom: 15px;
+  border-radius: 10px;
+  border-top-right-radius: 0px;
+  background-color: #0ad;
+  word-break: break-all;
+}
+
+.my-chat-box:before {
+  float: right;
+  border-radius: 0 3px 0 10px;
+  margin: -15px;
+  margin-top: -5px;
+  width: 10px;
+  height: 10px;
+  content: '';
+  transform: skewX(-45deg);
+  -moz-transform: skewX(-45deg);
+  -webkit-transform: skewX(-45deg);
+  -o-transform: skewX(-45deg);
+  -ms-transform: skewX(-45deg);
+  background-color: #0ad;
+}
+
+.link {
+  text-decoration: none;
+  font-weight: bold;
+  color: #000;
+}
+
+.link:hover {
+  text-decoration: underline;
+  cursor: pointer;
 }
