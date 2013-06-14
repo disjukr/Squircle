@@ -434,7 +434,7 @@ function createChatElement(nickname, message, time) {
     nicknameElement.textContent = nickname == ''? '*' : nickname;
 
     var messageElement = document.createElement('p');
-    messageElement.innerHTML = plainTolink(message);
+    messageElement.innerHTML = plainToLink(message);
     messageElement.className = 'chat-message';
 
     var timeElement = createTimeElement(time);
@@ -481,7 +481,7 @@ function createProfileElement(nickname) {
     return profileElement;
 }
 
-function plainTolink(text) {
+function plainToLink(text) {
     var exp = /(\b(https?|ftp|file):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/ig;
     return text.replace(exp, "<a href='$1' target='_blank' class='linkInMessage'>$1</a>"); 
 }
