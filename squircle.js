@@ -595,15 +595,17 @@ function encode_utf8(s) {
 function substr_utf8_bytes(str, startInBytes, lengthInBytes) {
     var resultStr = '';
     var startInChars = 0;
-    for (bytePos = 0; bytePos < startInBytes; ++startInChars) {
-        ch = str.charCodeAt(startInChars);
-        bytePos += (ch < 128)? 1 : encode_utf8(str[startInChars]).length;
+    var char;
+    for (var bytePos = 0; bytePos < startInBytes; ++startInChars) {
+        char = str.charCodeAt(startInChars);
+        bytePos += (char < 128)? 1 : encode_utf8(str[startInChars]).length;
     }
-    end = startInChars + lengthInBytes - 1;
-    for (n = startInChars; startInChars <= end; ++n) {
-        ch = str.charCodeAt(n);
-        end -= (ch < 128)? 1 : encode_utf8(str[n]).length;
-        resultStr += (str[n] == null)? '' : str[n];
+    var end = startInChars + lengthInBytes - 1;
+    for (var n = startInChars; startInChars <= end; ++n) {
+        char = str.charCodeAt(n);
+        end -= (char < 128)? 1 : encode_utf8(str[n]).length;
+        if (str[n] == null) break;
+        resultStr += str[n];
     }
     return resultStr;
 } //code from: http://stackoverflow.com/questions/11200451/extract-substring-by-utf-8-byte-positions
