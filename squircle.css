@@ -61,7 +61,7 @@ body {
 }
 
 .user-list > .owner {
-  color: #f44;
+  color: #f66;
 }
 
 .user-list > .operator {
@@ -69,11 +69,11 @@ body {
 }
 
 .user-list > .half-operator {
-  color: #33b;
+  color: #66e;
 }
 
 .user-list > .voice {
-  color: #864;
+  color: #b97;
 }
 
 #topic {

@@ -192,36 +192,34 @@ FIRCEventHandler['onUserList'] = function (channel, users) {
     console.log('users: ' + users);
     for (var i = 0; i < users.length; ++i) {
         var user = users[i];
-        var cls;
+        var status = user.charAt(0);
         var nickname;
-        switch (user.charAt(0)) {
+        switch (status) {
         case '~':
-            cls = 'user owner';
             nickname = user.substr(1);
             console.log('owner: ' + nickname);
             break;
         case '@':
-            cls = 'user operator';
             nickname = user.substr(1);
             console.log('operator: ' + nickname);
             break;
         case '%':
-            cls = 'user half-operator';
             nickname = user.substr(1);
             console.log('half operator: ' + nickname);
             break;
         case '+':
-            cls = 'user voice';
             nickname = user.substr(1);
             console.log('voice user: ' + nickname);
             break;
         default:
-            cls = 'user';
             nickname = user;
             console.log('user: ' + user);
             break;
         }
-        appendUserToChannel(channel, createUserElement(cls, nickname));
+        if (userList(channel)[nickname] == null)
+            appendUserToChannel(channel, status, nickname);
+        else
+            setUserStatus(status, userList(channel)[nickname]);
     }
 }
 
@@ -231,15 +229,20 @@ FIRCEventHandler['onUserJoin'] = function (channel, nickname) {
     console.log('nickname: ' + nickname);
     appendElementToChannel(channel,
         createNoticeElement(nickname + ' has joined'));
+    appendUserToChannel(channel, '', nickname);
 }
 
 FIRCEventHandler['onUserNick'] = function (user, nickname) {
     console.log('user nickname');
     console.log('user: ' + user);
     console.log('nickname: ' + nickname);
-    //TODO: append to all channel which have the user
-    appendElementToChannel(currentChannel,
-        createNoticeElement(user + ' now known as ' + nickname));
+    for (var channel in userListElements) {
+        if (userList(channel)[user] != null) {
+            appendElementToChannel(currentChannel,
+                createNoticeElement(user + ' now known as ' + nickname));
+            setUserNickname(channel, user, nickname);
+        }
+    }
 }
 
 FIRCEventHandler['onUserMode'] = function (channel, mode, nickname, from) {
@@ -248,12 +251,15 @@ FIRCEventHandler['onUserMode'] = function (channel, mode, nickname, from) {
     console.log('raw mode: ' + mode);
     var isGive = mode.charAt(0) == '+';
     var status;
+    var cls;
     switch (mode.charAt(1)) {
     case 'o':
         status = 'channel operator status';
+        cls = 'user operator';
         break;
     case 'v':
         status = 'voice';
+        cls = 'user voice';
         break;
     }
     console.log('mode: ' + status);
@@ -262,6 +268,7 @@ FIRCEventHandler['onUserMode'] = function (channel, mode, nickname, from) {
     appendElementToChannel(channel,
         createNoticeElement(from + (isGive? ' gives ' : ' removes ') +
             status + ' to ' + nickname));
+    userList(channel)[nickname].className = isGive? cls : 'user';
 }
 
 FIRCEventHandler['onUserPart'] = function (channel, nickname, message) {
@@ -271,15 +278,20 @@ FIRCEventHandler['onUserPart'] = function (channel, nickname, message) {
     console.log('message: ' + message);
     appendElementToChannel(channel,
         createNoticeElement(nickname + ' has quit: ' + message));
+    removeUserFromChannel(channel, nickname);
 }
 
 FIRCEventHandler['onUserQuit'] = function (nickname, message) {
     console.log('user quit');
     console.log('nickname: ' + nickname);
     console.log('message: ' + message);
-    //TODO: append to all channel which had the user
-    appendElementToChannel(currentChannel,
-        createNoticeElement(nickname + ' has quit: ' + message));
+    for (var channel in userListElements) {
+        if (userList(channel)[nickname] != null) {
+            appendElementToChannel(channel,
+                createNoticeElement(nickname + ' has quit: ' + message));
+            removeUserFromChannel(channel, nickname);
+        }
+    }
 }
 
 FIRCEventHandler['onKick'] = function (channel, nickname,
@@ -294,11 +306,13 @@ FIRCEventHandler['onKick'] = function (channel, nickname,
         appendElementToChannel(channel,
             createNoticeElement('You have been kicked by ' +
                 from + ': ' + message));
+        removeUserListFromChannel(channel);
     }
     else {
         appendElementToChannel(channel,
             createNoticeElement(nickname + ' have been kicked by ' +
                 from + ': ' + message));
+        removeUserFromChannel(channel, nickname);
     }
 }
 
@@ -535,19 +549,67 @@ function createProfileElement(nickname) {
 
 function createUserListElement() {
     var userListElement = document.createElement('ul');
+    userListElement.users = {};
     return userListElement;
 }
 
-function createUserElement(cls, nickname) {
+function createUserElement(status, nickname) {
     var userElement = document.createElement('li');
     userElement.textContent = nickname;
-    userElement.className = cls;
-
+    setUserStatus(status, userElement);
     return userElement;
 }
 
-function appendUserToChannel(channel, element) {
-    userListElements[channel].appendChild(element);
+function setUserStatus(status, userElement) {
+    switch (status) {
+    case '~':
+        userElement.className = 'user owner';
+        break;
+    case '@':
+        userElement.className = 'user operator';
+        break;
+    case '%':
+        userElement.className = 'user half-operator';
+        break;
+    case '+':
+        userElement.className = 'user voice';
+        break;
+    default:
+        userElement.className = 'user';
+        break;
+    }
+}
+
+function setUserNickname(channel, user, nickname) {
+    var userListElement = userListElements[channel];
+    var userElement = userListElement.users[user];
+    userListElement.users[nickname] = userElement;
+    delete userListElement.users[user];
+    userElement.textContent = nickname;
+}
+
+function appendUserToChannel(channel, status, nickname) {
+    var userElement = createUserElement(status, nickname);
+    var userListElement = userListElements[channel];
+    userListElement.appendChild(userElement);
+    userListElement.users[nickname] = userElement;
+}
+
+function removeUserFromChannel(channel, nickname) {
+    var userListElement = userListElements[channel];
+    var userElement = userListElement.users[nickname];
+    delete userListElement.users[nickname];
+    userElement.remove();
+}
+
+function removeUserListFromChannel(channel) {
+    var userListElement = userListElements[channel];
+    userListElement.innerHTML = '';
+    userListElement.users = {};
+}
+
+function userList(channel) {
+    return (channel == '#')? {} : userListElements[channel].users;
 }
 
 function plainToLink(text) {
