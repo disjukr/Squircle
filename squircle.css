@@ -38,6 +38,32 @@ body {
   background-color: #333;
 }
 
+#userlists > .userlist {
+  list-style: none;
+  padding:0;
+  margin:0;
+}
+
+.userlist > li {
+  color:white;
+}
+
+.userlist > .owner {
+  color:#d33;
+}
+
+.userlist > .operator {
+  color: #3a3;
+}
+
+.userlist > .half-operator {
+  color: #33b;
+}
+
+.userlist > .voice {
+  color: #864;
+}
+
 #topic {
   display: block;
   margin: 0;
@@ -157,22 +183,6 @@ body {
   border-radius: 5px;
   color: #fff;
   background-color: #321;
-}
-
-.owner {
-  background-color: #d33;
-}
-
-.operator {
-  background-color: #3a3;
-}
-
-.half-operator {
-  background-color: #33b;
-}
-
-.voice {
-  background-color: #864;
 }
 
 .chat-img {
