@@ -562,7 +562,7 @@ talkElement.onkeydown = function (e) {
         //irc command length limit is 512 including CRLF
         //so i cut message moderately
         var talkLength = utf8_length(talk);
-        var talkLengthLimit = 475 - utf8_length(currentChannel);
+        var talkLengthLimit = 470 - utf8_length(currentChannel);
         if (talkLength < talkLengthLimit) {
             sendMessage(currentChannel, talk);
         }
