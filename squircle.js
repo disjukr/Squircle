@@ -558,12 +558,55 @@ talkElement.value = '';
 talkElement.onkeydown = function (e) {
     var keyCode = e.keyCode? e.keyCode : event.keyCode;
     if (keyCode == 13) { //enter
-        sendMessage(currentChannel, talkElement.value);
+        var talk = talkElement.value;
+        //irc command length limit is 512 including CRLF
+        //so i cut message moderately
+        var talkLength = utf8_length(talk);
+        var talkLengthLimit = 475 - utf8_length(currentChannel);
+        if (talkLength < talkLengthLimit) {
+            sendMessage(currentChannel, talk);
+        }
+        else { //split message by irc command length limit
+            var byteCount;
+            var restCount;
+            for (byteCount = 0; byteCount < talkLength;
+                byteCount += talkLengthLimit) {
+                restCount = talkLength - byteCount;
+                sendMessage(currentChannel,
+                    substr_utf8_bytes(talk, byteCount,
+                        (restCount < talkLengthLimit)?
+                        restCount : talkLengthLimit));
+            }
+        }
         talkElement.value = '';
     }
 }
 
 talkElement.focus();
+
+function utf8_length(s) {
+    return s.replace(/[\0-\x7f]|([0-\u07ff]|(.))/g,"$&$1$2").length;
+} //code from: https://gist.github.com/mathiasbynens/1010324#comment-34505
+
+function encode_utf8(s) {
+  return unescape(encodeURIComponent(s));
+}
+
+function substr_utf8_bytes(str, startInBytes, lengthInBytes) {
+    var resultStr = '';
+    var startInChars = 0;
+    for (bytePos = 0; bytePos < startInBytes; ++startInChars) {
+        ch = str.charCodeAt(startInChars);
+        bytePos += (ch < 128)? 1 : encode_utf8(str[startInChars]).length;
+    }
+    end = startInChars + lengthInBytes - 1;
+    for (n = startInChars; startInChars <= end; ++n) {
+        ch = str.charCodeAt(n);
+        end -= (ch < 128)? 1 : encode_utf8(str[n]).length;
+        resultStr += (str[n] == null)? '' : str[n];
+    }
+    return resultStr;
+} //code from: http://stackoverflow.com/questions/11200451/extract-substring-by-utf-8-byte-positions
 
 swfobject.embedSWF('./firc2.swf', 'firc', '1px', '1px', '10',
     null, null, null, {allowScriptAccess: 'always'},
