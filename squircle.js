@@ -19,6 +19,9 @@ var serverTabElement = document.getElementById('server-tab');
 var tabButtonsElement = document.getElementById('tab-buttons');
 var tabElements = {'#': serverTabElement};
 var topics = {'#': 'Squircle - firc, ozinger based web irc client'};
+var userlistsElement = document.getElementById('userlists');
+var serverUserlistElement = document.getElementById('server-userlist');
+var userlistElements = {'#': serverUserlistElement};
 
 var FIRCEventListener = function (type, data) {
     var handler = FIRCEventHandler[type];
@@ -96,6 +99,8 @@ FIRCEventHandler['onJoin'] = function (channel) {
     console.log('channel: ' + channel);
     tabElements[channel] = createTabElement();
     tabsElement.appendChild(tabElements[channel]);
+    userlistElements[channel] = createUserlistElement();
+    userlistsElement.appendChild(userlistElements[channel]);
     tabButtonsElement.appendChild(createTabButtonElement(channel));
     activeChannel(channel);
     appendElementToChannel(channel,
@@ -187,23 +192,36 @@ FIRCEventHandler['onUserList'] = function (channel, users) {
     console.log('users: ' + users);
     for (var i = 0; i < users.length; ++i) {
         var user = users[i];
+        var cls;
+        var nickname;
         switch (user.charAt(0)) {
         case '~':
+            cls = 'owner';
+            nickname = user.substr(1);
             console.log('owner: ' + user.substr(1));
             break;
         case '@':
+            cls = 'operator';
+            nickname = user.substr(1);
             console.log('operator: ' + user.substr(1));
             break;
         case '%':
+            cls = 'half-operator';
+            nickname = user.substr(1);
             console.log('half operator: ' + user.substr(1));
             break;
         case '+':
+            cls = 'voice';
+            nickname = user.substr(1);
             console.log('voice user: ' + user.substr(1));
             break;
         default:
+            cls = '';
+            nickname = user;
             console.log('user: ' + user);
             break;
         }
+        appendUserToChannel(channel, createUserElement(cls, nickname));
     }
 }
 
@@ -384,6 +402,8 @@ function formatTime(time) {
 function activeChannel(channel) {
     tabElements[currentChannel].className = 'tab off';
     tabElements[channel].className = 'tab on';
+    userlistElements[currentChannel].className = 'userlist off';
+    userlistElements[channel].className = 'userlist on';
     tabsElement.scrollTop = tabsElement.scrollHeight;
     topicElement.value = topics[channel]? topics[channel] : '';
     currentChannel = channel;
@@ -417,6 +437,11 @@ function createTabButtonElement(channel) {
 function createTabElement() {
     var tabElement = document.createElement('div');
     return tabElement;
+}
+
+function createUserlistElement() {
+    var userlistElement = document.createElement('ul');
+    return userlistElement;
 }
 
 function createNoticeElement(message, time) {
@@ -511,6 +536,18 @@ function createProfileElement(nickname) {
     profileElement.appendChild(imageElement);
 
     return profileElement;
+}
+
+function createUserElement(cls, nickname) {
+    var userElement = document.createElement('li');
+    userElement.textContent = nickname;
+    userElement.className = cls;
+
+    return userElement;
+}
+
+function appendUserToChannel(channel, element) {
+    userlistElements[channel].appendChild(element);
 }
 
 function plainToLink(text) {
