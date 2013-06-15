@@ -19,9 +19,9 @@ var serverTabElement = document.getElementById('server-tab');
 var tabButtonsElement = document.getElementById('tab-buttons');
 var tabElements = {'#': serverTabElement};
 var topics = {'#': 'Squircle - firc, ozinger based web irc client'};
-var userlistsElement = document.getElementById('userlists');
-var serverUserlistElement = document.getElementById('server-userlist');
-var userlistElements = {'#': serverUserlistElement};
+var userListsElement = document.getElementById('user-lists');
+var serveruserListElement = document.getElementById('server-user-list');
+var userListElements = {'#': serveruserListElement};
 
 var FIRCEventListener = function (type, data) {
     var handler = FIRCEventHandler[type];
@@ -99,8 +99,8 @@ FIRCEventHandler['onJoin'] = function (channel) {
     console.log('channel: ' + channel);
     tabElements[channel] = createTabElement();
     tabsElement.appendChild(tabElements[channel]);
-    userlistElements[channel] = createUserlistElement();
-    userlistsElement.appendChild(userlistElements[channel]);
+    userListElements[channel] = createUserListElement();
+    userListsElement.appendChild(userListElements[channel]);
     tabButtonsElement.appendChild(createTabButtonElement(channel));
     activeChannel(channel);
     appendElementToChannel(channel,
@@ -162,10 +162,10 @@ FIRCEventHandler['onChannelChange'] = function (channel, mode, nickname) {
     console.log('mode: ' + mode);
     switch (mode.charAt(1)) { //Deal with firc bug
     case 'q':
-        requestUserList(channel);
+        requestuserList(channel);
         break;
     case 'h':
-        requestUserList(channel);
+        requestuserList(channel);
         break;
     }
     console.log('nickname: ' + nickname);
@@ -196,27 +196,27 @@ FIRCEventHandler['onUserList'] = function (channel, users) {
         var nickname;
         switch (user.charAt(0)) {
         case '~':
-            cls = 'owner';
+            cls = 'user owner';
             nickname = user.substr(1);
-            console.log('owner: ' + user.substr(1));
+            console.log('owner: ' + nickname);
             break;
         case '@':
-            cls = 'operator';
+            cls = 'user operator';
             nickname = user.substr(1);
-            console.log('operator: ' + user.substr(1));
+            console.log('operator: ' + nickname);
             break;
         case '%':
-            cls = 'half-operator';
+            cls = 'user half-operator';
             nickname = user.substr(1);
-            console.log('half operator: ' + user.substr(1));
+            console.log('half operator: ' + nickname);
             break;
         case '+':
-            cls = 'voice';
+            cls = 'user voice';
             nickname = user.substr(1);
-            console.log('voice user: ' + user.substr(1));
+            console.log('voice user: ' + nickname);
             break;
         default:
-            cls = '';
+            cls = 'user';
             nickname = user;
             console.log('user: ' + user);
             break;
@@ -372,7 +372,7 @@ function quitIrc(message) {
     sendIrcCommand('QUIT :' + message);
 }
 
-function requestUserList(channel) {
+function requestuserList(channel) {
     sendIrcCommand('NAMES ' + channel);
 }
 
@@ -402,8 +402,8 @@ function formatTime(time) {
 function activeChannel(channel) {
     tabElements[currentChannel].className = 'tab off';
     tabElements[channel].className = 'tab on';
-    userlistElements[currentChannel].className = 'userlist off';
-    userlistElements[channel].className = 'userlist on';
+    userListElements[currentChannel].className = 'user-list off';
+    userListElements[channel].className = 'user-list on';
     tabsElement.scrollTop = tabsElement.scrollHeight;
     topicElement.value = topics[channel]? topics[channel] : '';
     currentChannel = channel;
@@ -437,11 +437,6 @@ function createTabButtonElement(channel) {
 function createTabElement() {
     var tabElement = document.createElement('div');
     return tabElement;
-}
-
-function createUserlistElement() {
-    var userlistElement = document.createElement('ul');
-    return userlistElement;
 }
 
 function createNoticeElement(message, time) {
@@ -538,6 +533,11 @@ function createProfileElement(nickname) {
     return profileElement;
 }
 
+function createUserListElement() {
+    var userListElement = document.createElement('ul');
+    return userListElement;
+}
+
 function createUserElement(cls, nickname) {
     var userElement = document.createElement('li');
     userElement.textContent = nickname;
@@ -547,7 +547,7 @@ function createUserElement(cls, nickname) {
 }
 
 function appendUserToChannel(channel, element) {
-    userlistElements[channel].appendChild(element);
+    userListElements[channel].appendChild(element);
 }
 
 function plainToLink(text) {

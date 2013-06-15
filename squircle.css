@@ -38,29 +38,41 @@ body {
   background-color: #333;
 }
 
-#userlists > .userlist {
+#user-lists {
+  overflow-y: scroll;
+  height: 100%;
+}
+
+#user-lists > .user-list {
   list-style: none;
-  padding:0;
-  margin:0;
+  padding: 0;
+  margin: 0;
 }
 
-.userlist > li {
-  color:white;
+.user-list > .user {
+  color: #ddd;
+  font-size: 11px;
+  font-family: 'Nanum Gothic';
+  font-weight: bold;
+  padding: 5px;
+  margin: 5px;
+  margin-right: 15px;
+  background-color: #444;
 }
 
-.userlist > .owner {
-  color:#d33;
+.user-list > .owner {
+  color: #f44;
 }
 
-.userlist > .operator {
-  color: #3a3;
+.user-list > .operator {
+  color: #5d5;
 }
 
-.userlist > .half-operator {
+.user-list > .half-operator {
   color: #33b;
 }
 
-.userlist > .voice {
+.user-list > .voice {
   color: #864;
 }
 
