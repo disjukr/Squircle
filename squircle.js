@@ -155,10 +155,18 @@ FIRCEventHandler['onChannelChange'] = function (channel, mode, nickname) {
     console.log('channel change');
     console.log('channel: ' + channel);
     console.log('mode: ' + mode);
-    if (mode.charAt(1) == 'h') {
-        requestUserList(channel); //Deal with firc bug
+    switch (mode.charAt(1)) { //Deal with firc bug
+    case 'q':
+        requestUserList(channel);
+        break;
+    case 'h':
+        requestUserList(channel);
+        break;
     }
     console.log('nickname: ' + nickname);
+    appendElementToChannel(channel,
+        createNoticeElement(nickname + ' sets mode ' +
+            mode + ' on ' + channel));
 }
 
 FIRCEventHandler['onBanList'] = function (channel, nickname, from, time) {
@@ -220,19 +228,22 @@ FIRCEventHandler['onUserMode'] = function (channel, mode, nickname, from) {
     console.log('user mode');
     console.log('channel: ' + channel);
     console.log('raw mode: ' + mode);
+    var isGive = mode.charAt(0) == '+';
+    var status;
     switch (mode.charAt(1)) {
-    case 'q':
-        console.log('mode: ' + 'Owner');
-        break;
     case 'o':
-        console.log('mode: ' + 'Operator');
+        status = 'channel operator status';
         break;
     case 'v':
-        console.log('mode: ' + 'Voice');
+        status = 'voice';
         break;
     }
+    console.log('mode: ' + status);
     console.log('nickname: ' + nickname);
     console.log('from: ' + from);
+    appendElementToChannel(channel,
+        createNoticeElement(from + (isGive? ' gives ' : ' removes ') +
+            status + ' to ' + nickname));
 }
 
 FIRCEventHandler['onUserPart'] = function (channel, nickname, message) {
@@ -263,13 +274,13 @@ FIRCEventHandler['onKick'] = function (channel, nickname,
     console.log('is me: ' + isMe);
     if (isMe) {
         appendElementToChannel(channel,
-            createNoticeElement('You have been kicked by' +
-                from + ' because ' + message));
+            createNoticeElement('You have been kicked by ' +
+                from + ': ' + message));
     }
     else {
         appendElementToChannel(channel,
-            createNoticeElement(nickname + ' have been kicked by' +
-                from + ' because ' + message));
+            createNoticeElement(nickname + ' have been kicked by ' +
+                from + ': ' + message));
     }
 }
 
