@@ -108,6 +108,11 @@ FIRCEventHandler['onError'] = function (errorCode) {
     case 433:
         nickname = nickname + '_';
         changeNickname(nickname);
+        break;
+    case 403:
+        appendElementToChannel(currentChannel,
+            createNoticeElement('Invalid channel name'));
+        break;
     }
 }
 
@@ -377,6 +382,36 @@ FIRCEventHandler['onServerMessage'] = function (message) {
     console.log('server message');
     console.log('message: ' + message);
     appendElementToServer(createChatElement('', message));
+}
+
+var SpecialCommandHandler = {};
+
+SpecialCommandHandler['/help'] = function (command) {
+    var availableCommands = [];
+    for (var command in SpecialCommandHandler)
+        availableCommands.push(command);
+    appendElementToChannel(currentChannel,
+        createNoticeElement('available commands: ' +
+            availableCommands.join(' ')));
+}
+
+SpecialCommandHandler['/h'] = function (command) {
+    SpecialCommandHandler['/help'](command);
+}
+
+SpecialCommandHandler['/join'] = function (channel, password) {
+    joinChannel(channel, password);
+}
+
+SpecialCommandHandler['/j'] = function (channel, password) {
+    SpecialCommandHandler['/join'](channel, password);
+}
+
+SpecialCommandHandler['/msg'] = function () {
+    var args = Array.prototype.slice.call(arguments);
+    var channel = args.shift();
+    var message = args.join(' ');
+    sendMessage(channel, message);
 }
 
 function sendIrcCommand(message) {
@@ -704,23 +739,38 @@ talkElement.onkeydown = function (e) {
     var keyCode = e.keyCode? e.keyCode : event.keyCode;
     if (keyCode == 13) { //enter
         var talk = talkElement.value;
-        //irc command length limit is 512 including CRLF
-        //so i cut message moderately
-        var talkLength = utf8_length(talk);
-        var talkLengthLimit = 470 - utf8_length(currentChannel);
-        if (talkLength < talkLengthLimit) {
-            sendMessage(currentChannel, talk);
+        var command;
+        var commandArgs;
+        if (talk.charAt(0) == '/') { //special command
+            commandArgs = talk.split(/\s+/);
+            command = commandArgs.shift().toLowerCase();
+            FIRCEventHandler['onMyMessage'](currentChannel, nickname, talk);
+            //TODO: notify if command is not exist
+            if (SpecialCommandHandler[command] == null)
+                appendElementToChannel(currentChannel,
+                    createNoticeElement(command + ': Unknown command'));
+            else
+                SpecialCommandHandler[command].apply(null, commandArgs);
         }
-        else { //split message by irc command length limit
-            var byteCount;
-            var restCount;
-            for (byteCount = 0; byteCount < talkLength;
-                byteCount += talkLengthLimit) {
-                restCount = talkLength - byteCount;
-                sendMessage(currentChannel,
-                    substr_utf8_bytes(talk, byteCount,
-                        (restCount < talkLengthLimit)?
-                        restCount : talkLengthLimit));
+        else {
+            //irc command length limit is 512 including CRLF
+            //so i cut message moderately
+            var talkLength = utf8_length(talk);
+            var talkLengthLimit = 470 - utf8_length(currentChannel);
+            if (talkLength < talkLengthLimit) {
+                sendMessage(currentChannel, talk);
+            }
+            else { //split message by irc command length limit
+                var byteCount;
+                var restCount;
+                for (byteCount = 0; byteCount < talkLength;
+                    byteCount += talkLengthLimit) {
+                    restCount = talkLength - byteCount;
+                    sendMessage(currentChannel,
+                        substr_utf8_bytes(talk, byteCount,
+                            (restCount < talkLengthLimit)?
+                            restCount : talkLengthLimit));
+                }
             }
         }
         talkElement.value = '';
