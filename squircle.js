@@ -8,20 +8,29 @@ var password = '';
 var security = '843';
 
 var currentChannel = '#';
+
 var leftSideElement = document.getElementById('left-side');
 var rightSideElement = document.getElementById('right-side');
 var centerElement = document.getElementById('center');
+
 var topicElement = document.getElementById('topic');
 var nicknameElement = document.getElementById('nickname');
 var talkElement = document.getElementById('talk');
-var tabsElement = document.getElementById('tabs');
+
 var serverTabElement = document.getElementById('server-tab');
-var tabButtonsElement = document.getElementById('tab-buttons');
-var tabElements = {'#': serverTabElement};
-var topics = {'#': 'Squircle - firc, ozinger based web irc client'};
-var userListsElement = document.getElementById('user-lists');
+var serverTabButtonElement = document.getElementById('server-tab-button');
 var serveruserListElement = document.getElementById('server-user-list');
+
+var tabsElement = document.getElementById('tabs');
+var tabElements = {'#': serverTabElement};
+
+var tabButtonsElement = document.getElementById('tab-buttons');
+var tabButtonElements = {'#': serverTabButtonElement};
+
+var userListsElement = document.getElementById('user-lists');
 var userListElements = {'#': serveruserListElement};
+
+var topics = {'#': 'Squircle - firc, ozinger based web irc client'};
 
 var FIRCEventListener = function (type, data) {
     var handler = FIRCEventHandler[type];
@@ -63,6 +72,14 @@ FIRCEventHandler['debug'] = function (raw) {
             appendElementToChannel(channel, createNoticeElement(message));
             topicElement.value = topics[channel];
             break;
+        case '404':
+            var channel = splittedRaw.shift();
+            var message = splittedRaw.join(' ').substr(1);
+            console.log('error');
+            console.log('channel: ' + channel);
+            console.log('message: ' + message);
+            appendElementToChannel(channel, createNoticeElement(message));
+            break;
         }
     }
 }
@@ -97,11 +114,18 @@ FIRCEventHandler['onError'] = function (errorCode) {
 FIRCEventHandler['onJoin'] = function (channel) {
     console.log('join');
     console.log('channel: ' + channel);
-    tabElements[channel] = createTabElement();
-    tabsElement.appendChild(tabElements[channel]);
-    userListElements[channel] = createUserListElement();
-    userListsElement.appendChild(userListElements[channel]);
-    tabButtonsElement.appendChild(createTabButtonElement(channel));
+
+    if (tabElements[channel] == null) {
+        tabElements[channel] = createTabElement();
+        tabsElement.appendChild(tabElements[channel]);
+
+        tabButtonElements[channel] = createTabButtonElement(channel);
+        tabButtonsElement.appendChild(tabButtonElements[channel]);
+
+        userListElements[channel] = createUserListElement();
+        userListsElement.appendChild(userListElements[channel]);
+    }
+
     activeChannel(channel);
     appendElementToChannel(channel,
         createNoticeElement(nickname + ' has joined'));
