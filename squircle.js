@@ -32,6 +32,8 @@ var userListElements = {'#': serveruserListElement};
 
 var topics = {'#': 'Squircle - firc, ozinger based web irc client'};
 
+var nicknameMd5s = {};
+
 var FIRCEventListener = function (type, data) {
     var handler = FIRCEventHandler[type];
     if (handler && handler.apply) {
@@ -244,6 +246,17 @@ FIRCEventHandler['onUserList'] = function (channel, users) {
             nickname = user;
             console.log('user: ' + user);
             break;
+        }
+        if (nicknameMd5s[nickname] == null) {
+            var xhr = new XMLHttpRequest();
+            if (xhr) {
+                xhr.onload = function (e) {
+                    nicknameMd5s[this] = e.currentTarget.responseText;
+                }.bind(nickname);
+                xhr.open('get',
+                    'http://api.ozinger.org/disjukr/' + nickname, true);
+                xhr.send();
+            }
         }
         if (userList(channel)[nickname] == null)
             appendUserToChannel(channel, status, nickname);
@@ -613,19 +626,19 @@ function createTimeElement(time) {
     return timeElement;
 }
 
-function createProfileElement(nickname) {
+function createProfileElement(nickname, defaultImage) {
+    defaultImage = defaultImage ||
+        'https://raw.github.com/disjukr/Squircle/gh-pages/img/ozinger.png';
     var imageElement = new Image();
-    imageElement.src = './img/ozinger.png';
-    imageElement.style.margin = '0';
-    imageElement.style.width = 'inherit';
-    imageElement.style.height = 'inherit';
-    imageElement.style.borderRadius = 'inherit';
-
-    var profileElement = document.createElement('object');
-    profileElement.data = './img/profile/' + nickname + '.png';
-    profileElement.appendChild(imageElement);
-
-    return profileElement;
+    if (nicknameMd5s[nickname] == null) {
+        imageElement.src = './img/ozinger.png';
+    }
+    else {
+        imageElement.src = 'http://www.gravatar.com/avatar/' +
+            nicknameMd5s[nickname] +
+            '?d=' + encodeURIComponent(defaultImage);
+    }
+    return imageElement;
 }
 
 function createUserListElement() {
