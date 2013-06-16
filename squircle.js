@@ -466,10 +466,32 @@ function appendElementToChannel(channel, element) {
 function createTabButtonElement(channel) {
     var tabButtonElement = document.createElement('button');
     tabButtonElement.textContent = channel;
+    tabButtonElement.className = 'tab-button';
     tabButtonElement.onclick = function () {
         activeChannel(channel);
     }.bind(this);
-    return tabButtonElement;
+
+    var closeButtonElement = document.createElement('button');
+    closeButtonElement.textContent = 'x';
+    closeButtonElement.className = 'tab-close-button';
+    closeButtonElement.onclick = function () {
+        activeChannel('#');
+        partChannel(channel, 'Leaving');
+        removeUserListFromChannel(channel);
+        userListElements[channel].remove();
+        delete userListElements[channel];
+        tabElements[channel].remove();
+        delete tabElements[channel];
+        tabButtonElements[channel].remove();
+        delete tabButtonElements[channel];
+    }.bind(this);
+
+    var wrapElement = document.createElement('div');
+    wrapElement.appendChild(tabButtonElement);
+    wrapElement.appendChild(closeButtonElement);
+    wrapElement.style.clear = 'both';
+
+    return wrapElement;
 }
 
 function createTabElement() {
