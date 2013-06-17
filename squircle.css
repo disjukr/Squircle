@@ -238,6 +238,7 @@ body {
 .notice {
   display: block;
   text-align: center;
+  word-break: break-all;
   margin: 15px 125px 10px 125px;
   padding: 10px;
   width: 360px;
