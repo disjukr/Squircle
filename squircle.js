@@ -64,7 +64,7 @@ FIRCEventHandler['debug'] = function (raw) {
                 console.log('from: ' + from);
                 console.log('message: ' + message);
                 appendElementToChannel(currentChannel,
-                    createNoticeElement(from + ': ' + message));
+                    createNoticeElement(from + ': ' + message), 'notice');
             }
             break;
         case '482':
@@ -73,7 +73,8 @@ FIRCEventHandler['debug'] = function (raw) {
             console.log('error');
             console.log('channel: ' + channel);
             console.log('message: ' + message);
-            appendElementToChannel(channel, createNoticeElement(message));
+            appendElementToChannel(channel,
+                createNoticeElement(message), 'notice');
             topicElement.value = topics[channel];
             break;
         case '404':
@@ -82,7 +83,8 @@ FIRCEventHandler['debug'] = function (raw) {
             console.log('error');
             console.log('channel: ' + channel);
             console.log('message: ' + message);
-            appendElementToChannel(channel, createNoticeElement(message));
+            appendElementToChannel(channel,
+                createNoticeElement(message), 'notice');
             break;
         }
     }
@@ -115,7 +117,7 @@ FIRCEventHandler['onError'] = function (errorCode) {
         break;
     case 403:
         appendElementToChannel(currentChannel,
-            createNoticeElement('Invalid channel name'));
+            createNoticeElement('Invalid channel name'), 'notice');
         break;
     }
 }
@@ -137,7 +139,7 @@ FIRCEventHandler['onJoin'] = function (channel) {
 
     activeChannel(channel);
     appendElementToChannel(channel,
-        createNoticeElement(nickname + ' has joined'));
+        createNoticeElement(nickname + ' has joined'), 'notice');
 }
 
 FIRCEventHandler['onTopic'] = function (channel, topic) {
@@ -156,7 +158,7 @@ FIRCEventHandler['onTopicChange'] = function (channel, nickname, topic) {
     topics[channel] = topic;
     appendElementToChannel(channel,
         createNoticeElement(nickname +
-            ' has changed the topic to: ' + topic));
+            ' has changed the topic to: ' + topic), 'notice');
     topicElement.value = topics[currentChannel];
 }
 
@@ -204,7 +206,7 @@ FIRCEventHandler['onChannelChange'] = function (channel, mode, nickname) {
     console.log('nickname: ' + nickname);
     appendElementToChannel(channel,
         createNoticeElement(nickname + ' sets mode ' +
-            mode + ' on ' + channel));
+            mode + ' on ' + channel), 'notice');
 }
 
 FIRCEventHandler['onBanList'] = function (channel, nickname, from, time) {
@@ -272,7 +274,7 @@ FIRCEventHandler['onUserJoin'] = function (channel, nickname) {
     console.log('channel: ' + channel);
     console.log('nickname: ' + nickname);
     appendElementToChannel(channel,
-        createNoticeElement(nickname + ' has joined'));
+        createNoticeElement(nickname + ' has joined'), 'notice');
     appendUserToChannel(channel, '', nickname);
 }
 
@@ -283,7 +285,8 @@ FIRCEventHandler['onUserNick'] = function (user, nickname) {
     for (var channel in userListElements) {
         if (userList(channel)[user] != null) {
             appendElementToChannel(currentChannel,
-                createNoticeElement(user + ' now known as ' + nickname));
+                createNoticeElement(user + ' now known as ' + nickname),
+                'notice');
             setUserNickname(channel, user, nickname);
         }
     }
@@ -311,7 +314,7 @@ FIRCEventHandler['onUserMode'] = function (channel, mode, nickname, from) {
     console.log('from: ' + from);
     appendElementToChannel(channel,
         createNoticeElement(from + (isGive? ' gives ' : ' removes ') +
-            status + ' to ' + nickname));
+            status + ' to ' + nickname), 'notice');
     userList(channel)[nickname].className = isGive? cls : 'user';
 }
 
@@ -321,7 +324,7 @@ FIRCEventHandler['onUserPart'] = function (channel, nickname, message) {
     console.log('nickname: ' + nickname);
     console.log('message: ' + message);
     appendElementToChannel(channel,
-        createNoticeElement(nickname + ' has quit: ' + message));
+        createNoticeElement(nickname + ' has quit: ' + message), 'notice');
     removeUserFromChannel(channel, nickname);
 }
 
@@ -332,7 +335,8 @@ FIRCEventHandler['onUserQuit'] = function (nickname, message) {
     for (var channel in userListElements) {
         if (userList(channel)[nickname] != null) {
             appendElementToChannel(channel,
-                createNoticeElement(nickname + ' has quit: ' + message));
+                createNoticeElement(nickname + ' has quit: ' + message),
+                'notice');
             removeUserFromChannel(channel, nickname);
         }
     }
@@ -349,13 +353,13 @@ FIRCEventHandler['onKick'] = function (channel, nickname,
     if (isMe) {
         appendElementToChannel(channel,
             createNoticeElement('You have been kicked by ' +
-                from + ': ' + message));
+                from + ': ' + message), 'notice');
         removeUserListFromChannel(channel);
     }
     else {
         appendElementToChannel(channel,
             createNoticeElement(nickname + ' have been kicked by ' +
-                from + ': ' + message));
+                from + ': ' + message), 'notice');
         removeUserFromChannel(channel, nickname);
     }
 }
@@ -376,7 +380,8 @@ FIRCEventHandler['onMessage'] = function (channel, nickname, message) {
     console.log('channel: ' + channel);
     console.log('nickname: ' + nickname);
     console.log('message: ' + message);
-    appendElementToChannel(channel, createChatElement(nickname, message));
+    appendElementToChannel(channel,
+        createChatElement(nickname, message), 'message');
 }
 
 FIRCEventHandler['onMyMessage'] = function (channel, nickname, message) {
@@ -407,7 +412,7 @@ SpecialCommandHandler['/help'] = function (command) {
         availableCommands.push(command);
     appendElementToChannel(currentChannel,
         createNoticeElement('available commands: ' +
-            availableCommands.join(' ')));
+            availableCommands.join(' ')), 'notice');
 }
 
 SpecialCommandHandler['/h'] = function (command) {
@@ -496,12 +501,17 @@ function activeChannel(channel) {
     tabElements[channel].className = 'tab on';
     userListElements[currentChannel].className = 'user-list off';
     userListElements[channel].className = 'user-list on';
+    if (channel != '#') { //not server
+        var tabButtonElement = tabButtonElements[channel].
+            getElementsByClassName('tab-button')[0];
+        tabButtonElement.className = 'tab-button';
+    }
     tabsElement.scrollTop = tabsElement.scrollHeight;
     topicElement.value = topics[channel]? topics[channel] : '';
     currentChannel = channel;
 }
 
-function appendElementToChannel(channel, element) {
+function appendElementToChannel(channel, element, level) {
     var tabElement = tabElements[channel];
     if (tabElement) {
         var needScroll = tabsElement.offsetHeight +
@@ -512,6 +522,26 @@ function appendElementToChannel(channel, element) {
         tabElement.appendChild(element);
         if (needScroll)
             tabsElement.scrollTop = tabsElement.scrollHeight;
+        var tabButtonElement = tabButtonElements[channel].
+            getElementsByClassName('tab-button')[0];
+        var cls = tabButtonElement.className;
+        if (currentChannel != channel) {
+            switch (level) {
+            case 'notice':
+                if (cls != 'tab-button unconfirmed-mention')
+                if (cls != 'tab-button unconfirmed-message')
+                    cls = 'tab-button unconfirmed-notice';
+                break;
+            case 'message':
+                if (cls != 'tab-button unconfirmed-mention')
+                    cls = 'tab-button unconfirmed-message';
+                break;
+            case 'mention':
+                cls = 'tab-button unconfirmed-mention';
+                break;
+            }
+            tabButtonElement.className = cls;
+        }
     }
 }
 
@@ -765,7 +795,8 @@ talkElement.onkeydown = function (e) {
             FIRCEventHandler['onMyMessage'](currentChannel, nickname, talk);
             if (SpecialCommandHandler[command] == null)
                 appendElementToChannel(currentChannel,
-                    createNoticeElement(command + ': Unknown command'));
+                    createNoticeElement(command + ': Unknown command'),
+                    'notice');
             else
                 SpecialCommandHandler[command].apply(null, commandArgs);
         }

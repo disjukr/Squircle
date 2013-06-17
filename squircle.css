@@ -161,6 +161,18 @@ body {
   background-color: #abc;
 }
 
+.tab-button.unconfirmed-mention {
+  background-color: #df6;
+}
+
+.tab-button.unconfirmed-message {
+  background-color: #fd6;
+}
+
+.tab-button.unconfirmed-notice {
+  background-color: #6df;
+}
+
 .tab-close-button {
   display: inline-block;
   background-color: #d33;
