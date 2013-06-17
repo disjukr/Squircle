@@ -24,6 +24,8 @@ var serveruserListElement = document.getElementById('server-user-list');
 var tabsElement = document.getElementById('tabs');
 var tabElements = {'#': serverTabElement};
 
+var tabChildLimit = 500;
+
 var tabButtonsElement = document.getElementById('tab-buttons');
 var tabButtonElements = {'#': serverTabButtonElement};
 
@@ -394,7 +396,7 @@ FIRCEventHandler['onPrivMessage'] = function (nickname, message) {
 FIRCEventHandler['onServerMessage'] = function (message) {
     console.log('server message');
     console.log('message: ' + message);
-    appendElementToServer(createChatElement('', message));
+    appendElementToChannel('#', createChatElement('', message));
 }
 
 var SpecialCommandHandler = {};
@@ -495,20 +497,18 @@ function activeChannel(channel) {
     currentChannel = channel;
 }
 
-function appendElementToServer(element) {
-    var needScroll = tabsElement.offsetHeight +
-        tabsElement.scrollTop >= tabsElement.scrollHeight;
-    serverTabElement.appendChild(element);
-    if (needScroll)
-        tabsElement.scrollTop = tabsElement.scrollHeight;
-}
-
 function appendElementToChannel(channel, element) {
-    var needScroll = tabsElement.offsetHeight +
-        tabsElement.scrollTop >= tabsElement.scrollHeight;
-    tabElements[channel].appendChild(element);
-    if (needScroll)
-        tabsElement.scrollTop = tabsElement.scrollHeight;
+    var tabElement = tabElements[channel];
+    if (tabElement) {
+        var needScroll = tabsElement.offsetHeight +
+            tabsElement.scrollTop >= tabsElement.scrollHeight;
+        var children = tabElement.children;
+        while (children.length >= tabChildLimit)
+            children[0].remove();
+        tabElement.appendChild(element);
+        if (needScroll)
+            tabsElement.scrollTop = tabsElement.scrollHeight;
+    }
 }
 
 function createTabButtonElement(channel) {
