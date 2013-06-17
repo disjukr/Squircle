@@ -317,6 +317,14 @@ body {
   background-color: #fff;
 }
 
+.chat-box.mentioned {
+  background-color: #af0;
+}
+
+.chat-box.mentioned:before {
+  background-color: #af0;
+}
+
 .my-chat-box {
   float: right;
   width: 430px;

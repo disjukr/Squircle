@@ -375,13 +375,15 @@ FIRCEventHandler['onWhoIs'] = function (nickname, realname, ip,
     console.log('connected: ' + connected);
 }
 
-FIRCEventHandler['onMessage'] = function (channel, nickname, message) {
+FIRCEventHandler['onMessage'] = function (channel, from, message) {
     console.log('message');
     console.log('channel: ' + channel);
-    console.log('nickname: ' + nickname);
+    console.log('nickname: ' + from);
     console.log('message: ' + message);
+    var iMentioned = mentioned(message, nickname);
     appendElementToChannel(channel,
-        createChatElement(nickname, message), 'message');
+        createChatElement(from, message, iMentioned),
+        iMentioned? 'mention' : 'message');
 }
 
 FIRCEventHandler['onMyMessage'] = function (channel, nickname, message) {
@@ -620,7 +622,7 @@ function createMyChatElement(message, time) {
     return wrapElement;
 }
 
-function createChatElement(nickname, message, time) {
+function createChatElement(nickname, message, mentioned, time) {
     var profileElement = createProfileElement(nickname);
     profileElement.className = 'chat-img';
 
@@ -635,7 +637,7 @@ function createChatElement(nickname, message, time) {
     var timeElement = createTimeElement(time);
 
     var boxElement = document.createElement('div');
-    boxElement.className = 'chat-box';
+    boxElement.className = mentioned? 'chat-box mentioned' : 'chat-box';
     boxElement.appendChild(messageElement);
     boxElement.appendChild(timeElement);
 
@@ -739,6 +741,11 @@ function removeUserListFromChannel(channel) {
 
 function userList(channel) {
     return (channel == '#')? {} : userListElements[channel].users;
+}
+
+function mentioned(message, nickname) {
+    var regex = new RegExp('\\b(' + nickname + ')(?![\\w\\d])\\b');
+    return regex.test(message);
 }
 
 function plainToLink(text) {
