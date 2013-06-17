@@ -758,7 +758,6 @@ talkElement.onkeydown = function (e) {
             commandArgs = talk.split(/\s+/);
             command = commandArgs.shift().toLowerCase();
             FIRCEventHandler['onMyMessage'](currentChannel, nickname, talk);
-            //TODO: notify if command is not exist
             if (SpecialCommandHandler[command] == null)
                 appendElementToChannel(currentChannel,
                     createNoticeElement(command + ': Unknown command'));
