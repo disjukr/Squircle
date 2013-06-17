@@ -429,6 +429,10 @@ SpecialCommandHandler['/msg'] = function () {
     sendMessage(channel, message);
 }
 
+SpecialCommandHandler['/clear'] = function () {
+    tabElements[currentChannel].innerHTML = '';
+}
+
 function sendIrcCommand(message) {
     firc.sendMessage('', message);
 }
