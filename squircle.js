@@ -523,7 +523,8 @@ function createTabButtonElement(channel) {
     closeButtonElement.textContent = 'x';
     closeButtonElement.className = 'tab-close-button';
     closeButtonElement.onclick = function () {
-        activeChannel('#');
+        if (channel == currentChannel)
+            activeChannel('#');
         partChannel(channel, 'Leaving');
         removeUserListFromChannel(channel);
         userListElements[channel].remove();
