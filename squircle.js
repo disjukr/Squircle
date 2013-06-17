@@ -522,10 +522,10 @@ function appendElementToChannel(channel, element, level) {
         tabElement.appendChild(element);
         if (needScroll)
             tabsElement.scrollTop = tabsElement.scrollHeight;
-        var tabButtonElement = tabButtonElements[channel].
-            getElementsByClassName('tab-button')[0];
-        var cls = tabButtonElement.className;
-        if (currentChannel != channel) {
+        if ((currentChannel != channel) && (channel != '#')) {
+            var tabButtonElement = tabButtonElements[channel].
+                getElementsByClassName('tab-button')[0];
+            var cls = tabButtonElement.className;
             switch (level) {
             case 'notice':
                 if (cls != 'tab-button unconfirmed-mention')
