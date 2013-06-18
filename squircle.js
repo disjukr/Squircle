@@ -511,6 +511,7 @@ function activeChannel(channel) {
     tabsElement.scrollTop = tabsElement.scrollHeight;
     topicElement.value = topics[channel]? topics[channel] : '';
     currentChannel = channel;
+    talkElement.focus();
 }
 
 function appendElementToChannel(channel, element, level) {
