@@ -3,7 +3,7 @@ var server = 'webirc.ozinger.org';
 var port = '8080';
 var encode = 'UTF-8';
 var nickname = defaultNickname();
-var channel = '#abcdef';
+var channel = '#squircle';
 var password = '';
 var security = '843';
 
