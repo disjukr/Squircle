@@ -587,7 +587,7 @@ function createTabElement() {
 
 function createNoticeElement(message, time) {
     var messageElement = document.createElement('p');
-    messageElement.innerHTML = plainToHtmlEntity(message);
+    messageElement.innerHTML = plainToHtml(message);
     messageElement.className = 'notice-message';
 
     var timeElement = createTimeElement(time);
@@ -606,7 +606,7 @@ function createNoticeElement(message, time) {
 
 function createMyChatElement(message, time) {
     var messageElement = document.createElement('p');
-    messageElement.innerHTML = plainToHtmlEntity(message);
+    messageElement.innerHTML = plainToHtml(message);
     messageElement.className = 'chat-message';
 
     var timeElement = createTimeElement(time);
@@ -632,7 +632,7 @@ function createChatElement(nickname, message, mentioned, time) {
     nicknameElement.textContent = nickname == ''? '*' : nickname;
 
     var messageElement = document.createElement('p');
-    messageElement.innerHTML = plainToHtmlEntity(message);
+    messageElement.innerHTML = plainToHtml(message);
     messageElement.className = 'chat-message';
 
     var timeElement = createTimeElement(time);
